@@ -6,7 +6,11 @@ const card_colours = ['heart', 'diamond', 'club', 'spade'];
 
 let full_deck = {};
 
-let generate_full_deck = (data) => {
+let gameboard_height = 3;
+let gameboard_width  = 4;
+
+let generate_full_deck = function(){
+  let data = {};
   for (let colorname of card_colours) {
     // console.log("type de la variable data: ",typeof data);
     // console.log(colorname);
@@ -19,22 +23,30 @@ let generate_full_deck = (data) => {
   return data;
 };
 full_deck = generate_full_deck(full_deck)
-console.log(full_deck);
+game_deck = JSON.parse(JSON.stringify(full_deck))
+console.log(game_deck);
 
 let cards = [];
-let generate_four_random = function(data){
+let generate_four_random = function(){
+  let random_cards = {};
   for (let i = 1; i <= 4; i++) {
-    data.push(Math.floor(Math.random() * 13))
+    let card_color=card_colours[Math.floor(Math.random() * 4)]
+    if (! random_cards.hasOwnProperty(card_color)){
+      random_cards[card_color] = [];
+    }
+    card_idx=Math.floor(Math.random() * game_deck[card_color].length);
+    random_cards[card_color].push(card_idx);
   }
-  return data;
+  return random_cards;
 }
+console.log(generate_four_random());
 
 
-let fill_the_cardslist = function(data){
+/* let fill_the_cardslist = function(data){
   for (let current_color in cards){
 
   }
-}
+} */
 
 
 let sprite = Sprite({
