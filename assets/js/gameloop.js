@@ -53,18 +53,21 @@ let card_pos_y = 10;
 let card_width = (canvas.width / gameboard_width) - 20;
 let card_height = (canvas.height / gameboard_height) - 20;
 
-for (let card in first_line_cards){
-  console.log(first_line_cards[card]);
-  let card_symbol = Sprite({
-    x: card_pos_x + 10,        // starting x,y position of the sprite
-    y: card_pos_y,
-    color: 'red',  // fill color of the sprite rectangle
-    width: card_width,     // width and height of the sprite rectangle
-    height: card_height,
-    dx: 0          // move the sprite 0px to the right every frame
-  });
-  game_cards.push(card_symbol);
-  card_pos_x += card_width;
+for (let card_color in first_line_cards){
+  console.log(card_color);
+  console.log(first_line_cards[card_color]);
+  for (let card in first_line_cards[card_color]){
+    let card_symbol = Sprite({
+      x: card_pos_x + 10,        // starting x,y position of the sprite
+      y: card_pos_y,
+      color: 'red',  // fill color of the sprite rectangle
+      width: card_width,     // width and height of the sprite rectangle
+      height: card_height,
+      dx: 0          // move the sprite 0px to the right every frame
+    });
+    game_cards.push(card_symbol);
+    card_pos_x += card_width + 10;
+  }
 }
 console.log(game_cards)
 
