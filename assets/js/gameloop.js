@@ -58,9 +58,9 @@ for (let card_color in first_line_cards){
   console.log(first_line_cards[card_color]);
   for (let card in first_line_cards[card_color]){
     let card_symbol = Sprite({
-      x: card_pos_x + 10,        // starting x,y position of the sprite
+      x: card_pos_x,        // starting x,y position of the sprite
       y: card_pos_y,
-      color: 'red',  // fill color of the sprite rectangle
+      color: 'white',  // fill color of the sprite rectangle
       width: card_width,     // width and height of the sprite rectangle
       height: card_height,
       dx: 0          // move the sprite 0px to the right every frame
