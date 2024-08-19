@@ -35,7 +35,7 @@ let generate_four_random = function(){
       random_cards[card_color] = [];
     }
     card_idx=Math.floor(Math.random() * game_deck[card_color].length);
-    random_cards[card_color].push(card_idx);
+    random_cards[card_color].push(game_deck[card_color][card_idx]);
     game_deck[card_color].splice(card_idx,1);
   }
   return random_cards;
