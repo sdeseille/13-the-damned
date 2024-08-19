@@ -36,10 +36,12 @@ let generate_four_random = function(){
     }
     card_idx=Math.floor(Math.random() * game_deck[card_color].length);
     random_cards[card_color].push(card_idx);
+    game_deck[card_color].splice(card_idx,1);
   }
   return random_cards;
 }
 console.log(generate_four_random());
+console.log(game_deck);
 
 
 /* let fill_the_cardslist = function(data){
