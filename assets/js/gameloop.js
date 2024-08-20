@@ -1,4 +1,4 @@
-let { init, Sprite, GameLoop } = kontra
+let { init, Sprite, Text, GameLoop } = kontra
 let { canvas } = init();
 
 const card_colours = ['heart', 'diamond', 'club', 'spade'];
@@ -44,8 +44,6 @@ let second_line_cards = generate_four_random();
 let third_line_cards  = generate_four_random();
 let fourth_line_cards = generate_four_random();
 console.log(game_deck);
-console.log('🃏');
-
 
 let game_cards = [];
 let card_pos_x = 10;
@@ -53,36 +51,86 @@ let card_pos_y = 10;
 let card_width = (canvas.width / gameboard_width) - 20;
 let card_height = (canvas.height / gameboard_height) - 20;
 
+class Card {
+  constructor(x, y, width, height, color, text) {
+    this.sprite = Sprite({
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+      color: color
+    });
+
+    this.text = Text({
+      text: text,
+      font: '20px Arial',
+      color: 'black',
+      x: x + width / 2,
+      y: y + height / 2,
+      anchor: { x: 0.5, y: 0.5 },
+      textAlign: 'center'
+    });
+  }
+
+  render() {
+    this.sprite.render();
+    this.text.render();
+  }
+}
+
+
 for (let card_color in first_line_cards){
   console.log(card_color);
   console.log(first_line_cards[card_color]);
   for (let card in first_line_cards[card_color]){
-    let card_symbol = Sprite({
-      x: card_pos_x,        // starting x,y position of the sprite
-      y: card_pos_y,
-      color: 'white',  // fill color of the sprite rectangle
-      width: card_width,     // width and height of the sprite rectangle
-      height: card_height,
-      dx: 0          // move the sprite 0px to the right every frame
-    });
+    let card_symbol = new Card(card_pos_x, card_pos_y, card_width, card_height, 'white', 'Joker\n🃏');
     game_cards.push(card_symbol);
     card_pos_x += card_width + 10;
   }
 }
 console.log(game_cards)
 
+let heart   = '♥️';
+let spade   = '♠️';
+let diamond = '♦️';
+let club    = '♣️';
+let jocker  = '🃏';
+
+
+let text = Text({
+  text: jocker,
+  font: '52px Arial',
+  color: 'white',
+  x: 180,
+  y: 42,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center'
+});
+
+let text2 = Text({
+  text: club,
+  font: '24px Arial',
+  color: 'white',
+  x: 250,
+  y: 40,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center'
+});
+
 let loop = GameLoop({  // create the main game loop
   update: function() { // update the game state
-    for (card in game_cards){
-      //console.log(card);
-      game_cards[card].update();
-    }
+/*     for (card in game_cards){
+      console.log(card);
+      //game_cards[card].update();
+    } */
   },
   render: function() { // render the game state
     for (card in game_cards){
       //console.log(card);
       game_cards[card].render();
     }
+    // text.render();
+    // text2.render();
   }
 });
 
