@@ -8,6 +8,24 @@ let full_deck = {};
 let gameboard_height = 3;
 let gameboard_width  = 4;
 
+
+let card_figures = {
+  heart: '♥️',
+  spade: '♠️',
+  diamond: '♦️',
+  club: '♣️',
+  jocker: '🃏'
+};
+let heart   = '♥️';
+let spade   = '♠️';
+let diamond = '♦️';
+let club    = '♣️';
+let jocker  = '🃏';
+
+function capitalizeFirstLetter(string) {
+  return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+}
+
 let generate_full_deck = function(){
   let data = {};
   for (let colorname of card_colours) {
@@ -52,7 +70,7 @@ let card_width = (canvas.width / gameboard_width) - 20;
 let card_height = (canvas.height / gameboard_height) - 20;
 
 class Card {
-  constructor(x, y, width, height, color, text) {
+  constructor(x, y, width, height, color, card_color, text) {
     this.sprite = Sprite({
       x: x,
       y: y,
@@ -62,8 +80,8 @@ class Card {
     });
 
     this.text = Text({
-      text: text,
-      font: '20px Arial',
+      text: capitalizeFirstLetter(text) + '\n\n' + card_color,
+      font: '18px Arial',
       color: 'black',
       x: x + width / 2,
       y: y + height / 2,
@@ -83,19 +101,13 @@ for (let card_color in first_line_cards){
   console.log(card_color);
   console.log(first_line_cards[card_color]);
   for (let card in first_line_cards[card_color]){
-    let card_symbol = new Card(card_pos_x, card_pos_y, card_width, card_height, 'white', 'Joker\n🃏');
+    console.log(first_line_cards[card_color][card]);
+    let card_symbol = new Card(card_pos_x, card_pos_y, card_width, card_height, 'white', card_figures[card_color], first_line_cards[card_color][card]);
     game_cards.push(card_symbol);
     card_pos_x += card_width + 10;
   }
 }
 console.log(game_cards)
-
-let heart   = '♥️';
-let spade   = '♠️';
-let diamond = '♦️';
-let club    = '♣️';
-let jocker  = '🃏';
-
 
 let text = Text({
   text: jocker,
