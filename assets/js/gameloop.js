@@ -22,7 +22,7 @@ let diamond = '♦️';
 let club    = '♣️';
 let jocker  = '🃏';
 
-function capitalizeFirstLetter(string) {
+function capitalize_first_letter(string) {
   return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 }
 
@@ -43,9 +43,9 @@ full_deck = generate_full_deck();
 game_deck = JSON.parse(JSON.stringify(full_deck))
 console.log(game_deck);
 
-let generate_four_random = function(){
+let generate_random = function(){
   let random_cards = {};
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= gameboard_height * gameboard_width; i++) {
     let card_color=card_colours[Math.floor(Math.random() * 4)]
     if (! random_cards.hasOwnProperty(card_color)){
       random_cards[card_color] = [];
@@ -56,11 +56,11 @@ let generate_four_random = function(){
   }
   return random_cards;
 }
-let first_line_cards = generate_four_random();
-console.log(first_line_cards);
-let second_line_cards = generate_four_random();
-let third_line_cards  = generate_four_random();
-let fourth_line_cards = generate_four_random();
+let picked_cards = generate_random();
+console.log(picked_cards);
+// let second_line_cards = generate_random();
+// let third_line_cards  = generate_random();
+// let fourth_line_cards = generate_random();
 console.log(game_deck);
 
 let game_cards = [];
@@ -70,7 +70,9 @@ let card_width = (canvas.width / gameboard_width) - 20;
 let card_height = (canvas.height / gameboard_height) - 20;
 
 class Card {
-  constructor(x, y, width, height, color, card_color, text) {
+  constructor(x, y, width, height, color, card_color, card_figure) {
+    this.card_color = card_color;
+    this.card_figure = card_figure;
     this.sprite = Sprite({
       x: x,
       y: y,
@@ -80,7 +82,7 @@ class Card {
     });
 
     this.text = Text({
-      text: capitalizeFirstLetter(text) + '\n\n' + card_color,
+      text: capitalize_first_letter(card_figure) + '\n\n' + card_color,
       font: '18px Arial',
       color: 'black',
       x: x + width / 2,
@@ -96,16 +98,30 @@ class Card {
   }
 }
 
-
-for (let card_color in first_line_cards){
+let cards_by_line_limit = 4;
+let cards_by_line = 0;
+let card_X = card_pos_x;
+let card_Y = card_pos_y;
+for (let card_color in picked_cards){
   console.log(card_color);
-  console.log(first_line_cards[card_color]);
-  for (let card in first_line_cards[card_color]){
-    console.log(first_line_cards[card_color][card]);
-    let card_symbol = new Card(card_pos_x, card_pos_y, card_width, card_height, 'white', card_figures[card_color], first_line_cards[card_color][card]);
+  console.log(picked_cards[card_color]);
+  for (let card in picked_cards[card_color]){
+    console.log(picked_cards[card_color][card]);
+    if (cards_by_line < cards_by_line_limit){
+      if (cards_by_line){
+        card_X += card_width + 10;
+      }
+      
+    } else {
+      card_X = card_pos_x;
+      card_Y += card_height + 10;
+      cards_by_line = 0;
+    }
+    let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'white', card_figures[card_color], picked_cards[card_color][card]);
     game_cards.push(card_symbol);
-    card_pos_x += card_width + 10;
+    cards_by_line += 1;
   }
+
 }
 console.log(game_cards)
 
