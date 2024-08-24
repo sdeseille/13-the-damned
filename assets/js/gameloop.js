@@ -1,9 +1,6 @@
 let { init, Sprite, Text, GameLoop, track, initPointer, initInput } = kontra
 // , onDown, onPointerDown, collidesWithPointer, onInput, pointer
 let { canvas, context } = init();
-// this function must be called first before input
-// functions will work
-initInput();
 initPointer();
 
 const card_colours = ['heart', 'diamond', 'club', 'spade'];
@@ -34,12 +31,8 @@ function capitalize_first_letter(string) {
 let generate_full_deck = function(){
   let data = {};
   for (let colorname of card_colours) {
-    // console.log("type de la variable data: ",typeof data);
-    // console.log(colorname);
-    // console.log("type de la variable colorname: ",typeof colorname);
     if (! data.hasOwnProperty(colorname)){
       data[colorname] = ['ace','two','three','four','five','six','seven','eight','nine','ten','jack','queen','king'];
-      // console.log(colorname, " ajouté dans l'object");
     }
   };
   return data;
@@ -75,21 +68,24 @@ class Card {
   constructor(x, y, width, height, color, card_color, card_figure) {
     this.card_color = card_color;
     this.card_figure = card_figure;
+    this.color = color;
     this.returned = false;
     this.sprite = Sprite({
       x: x,
       y: y,
       width: width,
       height: height,
-      color: color,
+      color: this.color,
       onDown: this.onPointerDown.bind(this),
       radius: 5,
       render: function() {
         this.context.fillStyle = this.color;
-    
+        this.context.strokeStyle = 'black';
+        this.context.lineWidth = 3;
         this.context.beginPath();
         this.context.roundRect(0, 0, this.width, this.height, this.radius);
         this.context.fill();
+        this.context.stroke();
       }
     });
 
@@ -108,7 +104,8 @@ class Card {
   }
 
   show_card(){
-    this.returned=true;
+    this.sprite.color = 'white';
+    this.returned   = true;
   }
 
   update(){
@@ -156,47 +153,20 @@ for (let card_color in picked_cards){
       if (cards_by_line){
         card_X += card_width + 10;
       }
-      
     } else {
       card_X = card_pos_x;
       card_Y += card_height + 10;
       cards_by_line = 0;
     }
-    let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'white', card_figures[card_color], picked_cards[card_color][card]);
+    let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_figures[card_color], picked_cards[card_color][card]);
 
     card_symbol.render();
-    //track(card_symbol.text);
     game_cards.push(card_symbol);
     cards_by_line += 1;
   }
 
 }
 console.log(game_cards)
-
-let text = Text({
-  text: jocker,
-  font: '52px Arial',
-  color: 'white',
-  x: 180,
-  y: 42,
-  anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center'
-});
-
-let text2 = Text({
-  text: club,
-  font: '24px Arial',
-  color: 'white',
-  x: 250,
-  y: 40,
-  anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center'
-});
-
-/* // Register the pointer event listener to check all cards
-pointer.onDown(function() {
-  game_cards.forEach(card => game_cards[card].checkForClick());
-}); */
 
 let loop = GameLoop({  // create the main game loop
   update: function() { // update the game state
@@ -210,8 +180,6 @@ let loop = GameLoop({  // create the main game loop
       //console.log(card);
       game_cards[card].render();
     }
-    // text.render();
-    // text2.render();
   }
 });
 
