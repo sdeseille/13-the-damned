@@ -1,4 +1,4 @@
-let { init, Sprite, Text, GameLoop, track, initPointer, initInput } = kontra
+let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initInput } = kontra
 // , onDown, onPointerDown, collidesWithPointer, onInput, pointer
 let { canvas, context } = init();
 initPointer();
@@ -8,8 +8,8 @@ const card_colours = ['heart', 'diamond', 'club', 'spade'];
 let full_deck = {};
 
 let gameboard_height = 3;
-let gameboard_width  = 5;
-
+let gameboard_width  = 4;
+let game_state = 'menu';
 
 let card_figures = {
   heart: '♥️',
@@ -41,6 +41,54 @@ full_deck = generate_full_deck();
 game_deck = JSON.parse(JSON.stringify(full_deck))
 console.log(game_deck);
 
+let textOptions = {
+  color: 'white',
+  font: '20px Arial, sans-serif'
+};
+
+let start = Text({
+  text: 'Start',
+  onDown: function() {
+    // handle on down events on the sprite
+    console.log("Clicked on Start");
+    game_state = 'play';
+  },
+  ...textOptions
+});
+
+let options = Text({
+  text: 'Options',
+  onDown: function() {
+    // handle on down events on the sprite
+    console.log("Clicked on Options");
+  },
+  ...textOptions
+});
+
+let quit = Text({
+  text: 'Quit',
+  onDown: function() {
+    // handle on down events on the sprite
+    console.log("Clicked on Quit");
+  },
+  ...textOptions
+});
+
+let menu = Grid({
+  x: 300,
+  y: 100,
+  anchor: {x: 0.5, y: 0.5},
+
+  // add 15 pixels of space between each row
+  rowGap: 15,
+
+  // center the children
+  justify: 'center',
+
+  children: [start, options, quit]
+});
+track(start,options,quit);
+
 let generate_random = function(){
   let random_cards = {};
   for (let i = 1; i <= gameboard_height * gameboard_width; i++) {
@@ -61,7 +109,7 @@ console.log(game_deck);
 let game_cards = [];
 let card_pos_x = 10;
 let card_pos_y = 10;
-let card_width = (canvas.width / gameboard_width) - 40;
+let card_width = (canvas.width / gameboard_width) - 60;
 let card_height = card_width * 1.3;
 
 class Card {
@@ -176,9 +224,13 @@ let loop = GameLoop({  // create the main game loop
     }
   },
   render: function() { // render the game state
-    for (card in game_cards){
-      //console.log(card);
-      game_cards[card].render();
+    if (game_state == 'menu'){
+      menu.render();
+    } else if (game_state == 'play'){
+      for (card in game_cards){
+        //console.log(card);
+        game_cards[card].render();
+      }
     }
   }
 });
