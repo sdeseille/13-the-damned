@@ -68,8 +68,8 @@ console.log(game_deck);
 let game_cards = [];
 let card_pos_x = 10;
 let card_pos_y = 10;
-let card_width = (canvas.width / gameboard_width) - 12;
-let card_height = (canvas.height / gameboard_height) - 20;
+let card_width = (canvas.width / gameboard_width) - 40;
+let card_height = card_width * 1.3;
 
 class Card {
   constructor(x, y, width, height, color, card_color, card_figure) {
@@ -82,7 +82,15 @@ class Card {
       width: width,
       height: height,
       color: color,
-      onDown: this.onPointerDown.bind(this)
+      onDown: this.onPointerDown.bind(this),
+      radius: 5,
+      render: function() {
+        this.context.fillStyle = this.color;
+    
+        this.context.beginPath();
+        this.context.roundRect(0, 0, this.width, this.height, this.radius);
+        this.context.fill();
+      }
     });
 
     this.text = Text({
