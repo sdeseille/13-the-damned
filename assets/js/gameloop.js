@@ -1,7 +1,8 @@
-let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initInput } = kontra
+let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initKeys, onKey, initInput } = kontra;
 // , onDown, onPointerDown, collidesWithPointer, onInput, pointer
 let { canvas, context } = init();
 initPointer();
+initKeys();
 
 const card_colours = ['heart', 'diamond', 'club', 'spade'];
 
@@ -10,7 +11,11 @@ let full_deck = {};
 let gameboard_height = 3;
 let gameboard_width  = 4;
 let game_state = 'menu';
-
+onKey('q', function(e) {
+  // return to the game menu
+  console.log("q key pressed ! ");
+  game_state = 'menu';
+});
 let card_figures = {
   heart: '♥️',
   spade: '♠️',
