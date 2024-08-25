@@ -1,5 +1,5 @@
 let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initKeys, onKey, initInput } = kontra;
-// , onDown, onPointerDown, collidesWithPointer, onInput, pointer
+
 let { canvas, context } = init();
 initPointer();
 initKeys();
@@ -23,11 +23,6 @@ let card_figures = {
   club: '♣️',
   jocker: '🃏'
 };
-let heart   = '♥️';
-let spade   = '♠️';
-let diamond = '♦️';
-let club    = '♣️';
-let jocker  = '🃏';
 
 function capitalize_first_letter(string) {
   return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
