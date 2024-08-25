@@ -41,6 +41,17 @@ full_deck = generate_full_deck();
 game_deck = JSON.parse(JSON.stringify(full_deck))
 console.log(game_deck);
 
+let game_title = Text({
+  text: '13 The Damned',
+  font: '58px Arial',
+  color: 'yellow',
+  x: 300,
+  y: 75,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center'
+});
+
+
 let textOptions = {
   color: 'white',
   font: '20px Arial, sans-serif'
@@ -57,10 +68,10 @@ let start = Text({
 });
 
 let options = Text({
-  text: 'Options',
+  text: 'Difficulty',
   onDown: function() {
     // handle on down events on the sprite
-    console.log("Clicked on Options");
+    console.log("Clicked on Difficulty");
   },
   ...textOptions
 });
@@ -76,7 +87,7 @@ let quit = Text({
 
 let menu = Grid({
   x: 300,
-  y: 100,
+  y: 200,
   anchor: {x: 0.5, y: 0.5},
 
   // add 15 pixels of space between each row
@@ -207,12 +218,9 @@ for (let card_color in picked_cards){
       cards_by_line = 0;
     }
     let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_figures[card_color], picked_cards[card_color][card]);
-
-    card_symbol.render();
     game_cards.push(card_symbol);
     cards_by_line += 1;
   }
-
 }
 console.log(game_cards)
 
@@ -225,6 +233,7 @@ let loop = GameLoop({  // create the main game loop
   },
   render: function() { // render the game state
     if (game_state == 'menu'){
+      game_title.render();
       menu.render();
     } else if (game_state == 'play'){
       for (card in game_cards){
@@ -234,6 +243,5 @@ let loop = GameLoop({  // create the main game loop
     }
   }
 });
-
 
 loop.start();    // start the game
