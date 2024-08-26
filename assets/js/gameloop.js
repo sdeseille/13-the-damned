@@ -6,8 +6,6 @@ initKeys();
 
 const card_colours = ['heart', 'diamond', 'club', 'spade'];
 
-let full_deck = {};
-
 let gameboard_height = 3;
 let gameboard_width  = 4;
 let game_state = 'menu';
@@ -37,14 +35,12 @@ let generate_full_deck = function(){
   };
   return data;
 };
-full_deck = generate_full_deck();
-game_deck = JSON.parse(JSON.stringify(full_deck))
-console.log(game_deck);
+let full_deck = generate_full_deck();
 
 let game_title = Text({
   text: '13 The Damned',
   font: '58px Arial',
-  color: 'yellow',
+  color: 'red',
   x: 300,
   y: 75,
   anchor: {x: 0.5, y: 0.5},
@@ -63,6 +59,7 @@ let start = Text({
     // handle on down events on the sprite
     console.log("Clicked on Start");
     game_state = 'play';
+    init_gameboard();
   },
   ...textOptions
 });
@@ -99,23 +96,6 @@ let menu = Grid({
   children: [start, options, quit]
 });
 track(start,options,quit);
-
-let generate_random = function(){
-  let random_cards = {};
-  for (let i = 1; i <= gameboard_height * gameboard_width; i++) {
-    let card_color=card_colours[Math.floor(Math.random() * 4)]
-    if (! random_cards.hasOwnProperty(card_color)){
-      random_cards[card_color] = [];
-    }
-    card_idx=Math.floor(Math.random() * game_deck[card_color].length);
-    random_cards[card_color].push(game_deck[card_color][card_idx]);
-    game_deck[card_color].splice(card_idx,1);
-  }
-  return random_cards;
-}
-let picked_cards = generate_random();
-console.log(picked_cards);
-console.log(game_deck);
 
 let game_cards = [];
 let card_pos_x = 10;
@@ -199,30 +179,50 @@ class Card {
 
 }
 
-let cards_by_line_limit = gameboard_width;
-let cards_by_line = 0;
-let card_X = card_pos_x;
-let card_Y = card_pos_y;
-for (let card_color in picked_cards){
-  console.log(card_color);
-  console.log(picked_cards[card_color]);
-  for (let card in picked_cards[card_color]){
-    console.log(picked_cards[card_color][card]);
-    if (cards_by_line < cards_by_line_limit){
-      if (cards_by_line){
-        card_X += card_width + 10;
+function init_gameboard(){
+  let generate_random = function(){
+    game_deck = JSON.parse(JSON.stringify(full_deck))
+    console.log(game_deck);
+    let random_cards = {};
+    for (let i = 1; i <= gameboard_height * gameboard_width; i++) {
+      let card_color=card_colours[Math.floor(Math.random() * 4)]
+      if (! random_cards.hasOwnProperty(card_color)){
+        random_cards[card_color] = [];
       }
-    } else {
-      card_X = card_pos_x;
-      card_Y += card_height + 10;
-      cards_by_line = 0;
+      card_idx=Math.floor(Math.random() * game_deck[card_color].length);
+      random_cards[card_color].push(game_deck[card_color][card_idx]);
+      game_deck[card_color].splice(card_idx,1);
     }
-    let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_figures[card_color], picked_cards[card_color][card]);
-    game_cards.push(card_symbol);
-    cards_by_line += 1;
+    return random_cards;
   }
+  let picked_cards = generate_random();
+  console.log(picked_cards);
+  console.log(game_deck);
+  let cards_by_line_limit = gameboard_width;
+  let cards_by_line = 0;
+  let card_X = card_pos_x;
+  let card_Y = card_pos_y;
+  for (let card_color in picked_cards){
+    console.log(card_color);
+    console.log(picked_cards[card_color]);
+    for (let card in picked_cards[card_color]){
+      console.log(picked_cards[card_color][card]);
+      if (cards_by_line < cards_by_line_limit){
+        if (cards_by_line){
+          card_X += card_width + 10;
+        }
+      } else {
+        card_X = card_pos_x;
+        card_Y += card_height + 10;
+        cards_by_line = 0;
+      }
+      let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_figures[card_color], picked_cards[card_color][card]);
+      game_cards.push(card_symbol);
+      cards_by_line += 1;
+    }
+  }
+  console.log(game_cards)
 }
-console.log(game_cards)
 
 let loop = GameLoop({  // create the main game loop
   update: function() { // update the game state
