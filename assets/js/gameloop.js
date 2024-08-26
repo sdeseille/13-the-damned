@@ -40,7 +40,7 @@ let full_deck = generate_full_deck();
 let game_title = Text({
   text: '13 The Damned',
   font: '58px Arial',
-  color: 'red',
+  color: 'yellow',
   x: 300,
   y: 75,
   anchor: {x: 0.5, y: 0.5},
@@ -61,6 +61,12 @@ let start = Text({
     game_state = 'play';
     init_gameboard();
   },
+  onOver: function() {
+    this.font = 'bold 20px Arial, sans-serif';
+  },
+  onOut: function() {
+    this.font = '20px Arial, sans-serif';
+  },
   ...textOptions
 });
 
@@ -70,6 +76,12 @@ let options = Text({
     // handle on down events on the sprite
     console.log("Clicked on Difficulty");
   },
+  onOver: function() {
+    this.font = 'bold 20px Arial, sans-serif';
+  },
+  onOut: function() {
+    this.font = '20px Arial, sans-serif';
+  },
   ...textOptions
 });
 
@@ -78,6 +90,12 @@ let quit = Text({
   onDown: function() {
     // handle on down events on the sprite
     console.log("Clicked on Quit");
+  },
+  onOver: function() {
+    this.font = 'bold 20px Arial, sans-serif';
+  },
+  onOut: function() {
+    this.font = '20px Arial, sans-serif';
   },
   ...textOptions
 });
