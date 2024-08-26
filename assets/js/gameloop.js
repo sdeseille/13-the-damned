@@ -47,10 +47,12 @@ let game_title = Text({
   textAlign: 'center'
 });
 
+bold_font = 'bold 20px Arial, sans-serif';
+normal_font = '20px Arial, sans-serif';
 
 let textOptions = {
   color: 'white',
-  font: '20px Arial, sans-serif'
+  font: normal_font
 };
 
 let start = Text({
@@ -62,10 +64,10 @@ let start = Text({
     init_gameboard();
   },
   onOver: function() {
-    this.font = 'bold 20px Arial, sans-serif';
+    this.font = bold_font;
   },
   onOut: function() {
-    this.font = '20px Arial, sans-serif';
+    this.font = normal_font;
   },
   ...textOptions
 });
@@ -77,10 +79,10 @@ let options = Text({
     console.log("Clicked on Difficulty");
   },
   onOver: function() {
-    this.font = 'bold 20px Arial, sans-serif';
+    this.font = bold_font;
   },
   onOut: function() {
-    this.font = '20px Arial, sans-serif';
+    this.font = normal_font;
   },
   ...textOptions
 });
@@ -92,10 +94,10 @@ let quit = Text({
     console.log("Clicked on Quit");
   },
   onOver: function() {
-    this.font = 'bold 20px Arial, sans-serif';
+    this.font = bold_font;
   },
   onOut: function() {
-    this.font = '20px Arial, sans-serif';
+    this.font = normal_font;
   },
   ...textOptions
 });
