@@ -9,6 +9,10 @@ const card_colours = ['heart', 'diamond', 'club', 'spade'];
 let gameboard_height = 3;
 let gameboard_width  = 4;
 let game_state = 'menu';
+let game_points_multiplier = 0;
+let cards_sum = 0;
+const THIRTEEN = 13;
+
 onKey('q', function(e) {
   // return to the game menu
   console.log("q key pressed ! ");
@@ -37,6 +41,12 @@ let generate_full_deck = function(){
 };
 let full_deck = generate_full_deck();
 
+let retrieve_card_value = function(cards_deck,card_color,card_figure){
+  let card_index = cards_deck[card_color].indexOf(card_figure);
+  let card_value = card_index + 1;
+  return card_value;
+}
+
 let game_title = Text({
   text: '13 The Damned',
   font: '58px Arial',
@@ -61,6 +71,7 @@ let start = Text({
     // handle on down events on the sprite
     console.log("Clicked on Start");
     game_state = 'play';
+    game_points_multiplier = 0;
     init_gameboard();
   },
   onOver: function() {
@@ -117,6 +128,7 @@ let menu = Grid({
 });
 track(start,options,quit);
 
+
 let game_cards = [];
 let card_pos_x = 10;
 let card_pos_y = 10;
@@ -129,6 +141,8 @@ class Card {
     this.card_figure = card_figure;
     this.color = color;
     this.returned = false;
+    this.kept = false;
+    this.lost = false;
     this.sprite = Sprite({
       x: x,
       y: y,
@@ -149,7 +163,7 @@ class Card {
     });
 
     this.text = Text({
-      text: capitalize_first_letter(card_figure) + '\n\n' + card_color,
+      text: capitalize_first_letter(card_figure) + '\n\n' + this.card_icon(),
       font: '16px Arial',
       color: 'black',
       x: x + width / 2,
@@ -164,7 +178,26 @@ class Card {
 
   show_card(){
     this.sprite.color = 'white';
-    this.returned   = true;
+    this.returned     = true;
+  }
+
+  pick_card(){
+    this.kept = true;
+  }
+
+  add_card_value(){
+    let card_value = retrieve_card_value(full_deck,this.card_color,this.card_figure);
+    console.log('Card value = ' + card_value);
+    cards_sum += card_value;
+  }
+
+  card_icon(){
+    return card_figures[this.card_color];
+  }
+
+  discard_card(){
+    this.kept = false;
+    this.lost = true;
   }
 
   update(){
@@ -187,7 +220,11 @@ class Card {
     console.log(`Card with text "${this.text.text}" clicked!`);
     // Additional actions on click can be added here
     this.show_card();
+    this.pick_card();
+    this.add_card_value();
+    game_points_multiplier += 1;
     console.log(game_cards)
+    console.log('Current multiplier: ' + game_points_multiplier);
   }
 
   // Check if the card was clicked
@@ -236,7 +273,7 @@ function init_gameboard(){
         card_Y += card_height + 10;
         cards_by_line = 0;
       }
-      let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_figures[card_color], picked_cards[card_color][card]);
+      let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_color, picked_cards[card_color][card]);
       game_cards.push(card_symbol);
       cards_by_line += 1;
     }
@@ -244,22 +281,45 @@ function init_gameboard(){
   console.log(game_cards)
 }
 
+function check_cards_sum(){
+  if (cards_sum >= THIRTEEN){
+    game_state = 'gameover';
+  }
+}
+
 let loop = GameLoop({  // create the main game loop
   update: function() { // update the game state
-    for (card in game_cards){
-      //console.log(card);
-      game_cards[card].update();
+    switch (game_state) {
+      case 'menu':
+        break;
+      case 'play':
+        for (card in game_cards){
+          //console.log(card);
+          game_cards[card].update();
+        }
+        console.log('Current sum of selected cards: ' + cards_sum)
+        check_cards_sum();
+        break;
+      case 'gameover':
+        console.log('Game Over !');
+        break;
     }
   },
   render: function() { // render the game state
-    if (game_state == 'menu'){
-      game_title.render();
-      menu.render();
-    } else if (game_state == 'play'){
-      for (card in game_cards){
-        //console.log(card);
-        game_cards[card].render();
-      }
+    switch (game_state) {
+      case 'menu':
+        game_title.render();
+        menu.render();
+        break;
+      case 'play':
+        for (card in game_cards){
+          //console.log(card);
+          game_cards[card].render();
+        }
+        break;
+      case 'gameover':
+        console.log('Game Over !');
+        break;
     }
   }
 });
