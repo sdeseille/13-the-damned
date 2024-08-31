@@ -57,6 +57,26 @@ let game_title = Text({
   textAlign: 'center'
 });
 
+let game_over = Text({
+  text: '13 The Damned\nGame Over',
+  font: 'italic 58px Arial',
+  color: 'red',
+  x: 300,
+  y: 75,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center'
+});
+
+let start_again = Text({
+  text: 'Press [q] to restart',
+  font: 'bold 16px Arial',
+  color: 'white',
+  x: 300,
+  y: 200,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center'
+});
+
 bold_font = 'bold 20px Arial, sans-serif';
 normal_font = '20px Arial, sans-serif';
 
@@ -113,7 +133,7 @@ let quit = Text({
   ...textOptions
 });
 
-let menu = Grid({
+let start_menu = Grid({
   x: 300,
   y: 200,
   anchor: {x: 0.5, y: 0.5},
@@ -128,6 +148,20 @@ let menu = Grid({
 });
 track(start,options,quit);
 
+
+/* let end_menu = Grid({
+  x: 500,
+  y: 200,
+  anchor: {x: 0.5, y: 0.5},
+
+  // add 15 pixels of space between each row
+  rowGap: 15,
+
+  // center the children
+  justify: 'center',
+
+  children: [start, quit]
+}); */
 
 let game_cards = [];
 let card_pos_x = 10;
@@ -237,6 +271,7 @@ class Card {
 }
 
 function init_gameboard(){
+  cards_sum = 0;
   let generate_random = function(){
     game_deck = JSON.parse(JSON.stringify(full_deck))
     console.log(game_deck);
@@ -309,7 +344,7 @@ let loop = GameLoop({  // create the main game loop
     switch (game_state) {
       case 'menu':
         game_title.render();
-        menu.render();
+        start_menu.render();
         break;
       case 'play':
         for (card in game_cards){
@@ -318,7 +353,9 @@ let loop = GameLoop({  // create the main game loop
         }
         break;
       case 'gameover':
-        console.log('Game Over !');
+        game_over.render();
+        start_again.render();
+        //console.log('Game Over !');
         break;
     }
   }
