@@ -77,6 +77,19 @@ let start_again = Text({
   textAlign: 'center'
 });
 
+let bonus_widget = Text({
+  text: 'Bonus \nX ' + game_points_multiplier,
+  font: 'bold 24px Arial',
+  color: 'white',
+  x: 500,
+  y: 300,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center',
+  update: function () {
+    this.text = 'Bonus \nX ' + game_points_multiplier
+  }
+});
+
 bold_font = 'bold 20px Arial, sans-serif';
 normal_font = '20px Arial, sans-serif';
 
@@ -331,12 +344,13 @@ let loop = GameLoop({  // create the main game loop
         for (card in game_cards){
           //console.log(card);
           game_cards[card].update();
+          bonus_widget.update();
         }
         console.log('Current sum of selected cards: ' + cards_sum)
         check_cards_sum();
         break;
       case 'gameover':
-        console.log('Game Over !');
+        //console.log('Game Over !');
         break;
     }
   },
@@ -347,9 +361,11 @@ let loop = GameLoop({  // create the main game loop
         start_menu.render();
         break;
       case 'play':
+        
         for (card in game_cards){
           //console.log(card);
           game_cards[card].render();
+          bonus_widget.render();
         }
         break;
       case 'gameover':
