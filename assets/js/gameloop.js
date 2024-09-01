@@ -1,4 +1,4 @@
-let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initKeys, onKey, initInput } = kontra;
+let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initKeys, onKey, initInput, Button } = kontra;
 
 let { canvas, context } = init();
 initPointer();
@@ -18,6 +18,7 @@ onKey('q', function(e) {
   console.log("q key pressed ! ");
   game_state = 'menu';
 });
+
 let card_figures = {
   heart: '♥️',
   spade: '♠️',
@@ -77,42 +78,44 @@ let start_again = Text({
   textAlign: 'center'
 });
 
+let cards_sum_widget = Text({
+  text: 'Cards sum: ' + cards_sum,
+  font: 'bold 20px Arial',
+  color: 'white',
+  x: 500,
+  y: 50,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'left',
+  update: function () {
+    this.text = 'Cards sum: ' + cards_sum,
+    this.textAlign = 'left'
+  }
+});
+
 let score_widget = Text({
-  text: 'Score :\n ' + cards_sum,
-  font: 'bold 24px Arial',
+  text: 'Score : ' + cards_sum,
+  font: 'bold 20px Arial',
   color: 'white',
   x: 500,
   y: 100,
   anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center',
+  textAlign: 'left',
   update: function () {
-    this.text = 'Score :\n ' + cards_sum
+    this.text = 'Score: ' + cards_sum * game_points_multiplier,
+    this.textAlign = 'left'
   }
 });
 
 let bonus_widget = Text({
   text: 'Bonus \nX ' + game_points_multiplier,
-  font: 'bold 24px Arial',
+  font: 'bold 20px Arial',
   color: 'white',
   x: 500,
-  y: 200,
+  y: 150,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
   update: function () {
     this.text = 'Bonus \nX ' + game_points_multiplier
-  }
-});
-
-let final_score_widget = Text({
-  text: 'Total :\n ' + cards_sum,
-  font: 'bold 24px Arial',
-  color: 'white',
-  x: 500,
-  y: 300,
-  anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center',
-  update: function () {
-    this.text = 'Final Score :\n ' + cards_sum * game_points_multiplier
   }
 });
 
@@ -202,6 +205,69 @@ track(start,options,quit);
   children: [start, quit]
 }); */
 
+let keep_button = Button({
+  // sprite properties
+  x: 500,
+  y: 300,
+  anchor: {x: 0.5, y: 0.5},
+
+  // text properties
+  text: {
+    text: 'Keep Cards',
+    color: 'white',
+    font: '20px Arial, sans-serif',
+    anchor: {x: 0.5, y: 0.5}
+  },
+
+  // button properties
+  padX: 20,
+  padY: 10,
+
+  sprite: Sprite({
+    x: this.x,
+    y: this.y,
+    width: 150,
+    height: 40,
+    color: 'blue',
+    //onDown: this.onPointerDown.bind(this),
+    radius: 5,
+    render: function() {
+      this.context.fillStyle = this.color;
+      this.context.strokeStyle = 'black';
+      this.context.lineWidth = 3;
+      this.context.beginPath();
+      this.context.roundRect(0, 0, this.width, this.height, this.radius);
+      this.context.fill();
+      this.context.stroke();
+    }
+  }),
+
+ render() {
+    this.sprite.render();
+    // focused by keyboard
+    if (this.focused) {
+      this.context.setLineDash([8,10]);
+      this.context.lineWidth = 3;
+      this.context.strokeStyle = 'red';
+      this.context.strokeRect(0, 0, this.width, this.height);
+    }
+
+    // pressed by mouse, touch, or enter/space on keyboard
+    if (this.pressed) {
+      this.textNode.color = 'yellow';
+    }
+    // hovered by mouse
+    else if (this.hovered) {
+      this.textNode.color = 'red';
+      canvas.style.cursor = 'pointer';
+    }
+    else  {
+      this.textNode.color = 'white';
+      canvas.style.cursor = 'initial';
+    }
+  }
+});
+
 let game_cards = [];
 let card_pos_x = 10;
 let card_pos_y = 10;
@@ -268,6 +334,15 @@ class Card {
     return card_figures[this.card_color];
   }
 
+  is_damned(){
+    let card_value = retrieve_card_value(full_deck,this.card_color,this.card_figure);
+    if (this.returned && (card_value == THIRTEEN)){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   discard_card(){
     this.kept = false;
     this.lost = true;
@@ -310,6 +385,7 @@ class Card {
 }
 
 function init_gameboard(){
+  game_cards = [];
   cards_sum = 0;
   let generate_random = function(){
     game_deck = JSON.parse(JSON.stringify(full_deck))
@@ -328,7 +404,7 @@ function init_gameboard(){
   }
   let picked_cards = generate_random();
   console.log(picked_cards);
-  console.log(game_deck);
+  //console.log(game_deck);
   let cards_by_line_limit = gameboard_width;
   let cards_by_line = 0;
   let card_X = card_pos_x;
@@ -355,9 +431,16 @@ function init_gameboard(){
   console.log(game_cards)
 }
 
+function have_you_been_cursed(current_card){
+  if (current_card.is_damned()){
+    game_state = 'gameover'
+  }
+}
+
 function check_cards_sum(){
   if (cards_sum >= THIRTEEN){
-    game_state = 'gameover';
+    //game_state = 'gameover';
+    console.log('You reached damned number');
   }
 }
 
@@ -370,15 +453,15 @@ let loop = GameLoop({  // create the main game loop
         for (card in game_cards){
           //console.log(card);
           game_cards[card].update();
-          score_widget.update();
+          have_you_been_cursed(game_cards[card]);
+          cards_sum_widget.update();
           bonus_widget.update();
-          final_score_widget.update();
+          score_widget.update();
         }
         console.log('Current sum of selected cards: ' + cards_sum)
         check_cards_sum();
         break;
       case 'gameover':
-        //console.log('Game Over !');
         break;
     }
   },
@@ -389,19 +472,18 @@ let loop = GameLoop({  // create the main game loop
         start_menu.render();
         break;
       case 'play':
-        
         for (card in game_cards){
           //console.log(card);
           game_cards[card].render();
-          score_widget.render();
+          cards_sum_widget.render();
           bonus_widget.render();
-          final_score_widget.render();
+          score_widget.render();
+          keep_button.render();
         }
         break;
       case 'gameover':
         game_over.render();
         start_again.render();
-        //console.log('Game Over !');
         break;
     }
   }
