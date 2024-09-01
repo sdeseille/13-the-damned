@@ -77,8 +77,34 @@ let start_again = Text({
   textAlign: 'center'
 });
 
+let score_widget = Text({
+  text: 'Score :\n ' + cards_sum,
+  font: 'bold 24px Arial',
+  color: 'white',
+  x: 500,
+  y: 100,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center',
+  update: function () {
+    this.text = 'Score :\n ' + cards_sum
+  }
+});
+
 let bonus_widget = Text({
   text: 'Bonus \nX ' + game_points_multiplier,
+  font: 'bold 24px Arial',
+  color: 'white',
+  x: 500,
+  y: 200,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center',
+  update: function () {
+    this.text = 'Bonus \nX ' + game_points_multiplier
+  }
+});
+
+let final_score_widget = Text({
+  text: 'Total :\n ' + cards_sum,
   font: 'bold 24px Arial',
   color: 'white',
   x: 500,
@@ -86,7 +112,7 @@ let bonus_widget = Text({
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
   update: function () {
-    this.text = 'Bonus \nX ' + game_points_multiplier
+    this.text = 'Final Score :\n ' + cards_sum * game_points_multiplier
   }
 });
 
@@ -344,7 +370,9 @@ let loop = GameLoop({  // create the main game loop
         for (card in game_cards){
           //console.log(card);
           game_cards[card].update();
+          score_widget.update();
           bonus_widget.update();
+          final_score_widget.update();
         }
         console.log('Current sum of selected cards: ' + cards_sum)
         check_cards_sum();
@@ -365,7 +393,9 @@ let loop = GameLoop({  // create the main game loop
         for (card in game_cards){
           //console.log(card);
           game_cards[card].render();
+          score_widget.render();
           bonus_widget.render();
+          final_score_widget.render();
         }
         break;
       case 'gameover':
