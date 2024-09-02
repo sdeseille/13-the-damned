@@ -11,6 +11,7 @@ let gameboard_width  = 4;
 let game_state = 'menu';
 let game_points_multiplier = 0;
 let cards_sum = 0;
+let final_score = 0;
 const THIRTEEN = 13;
 
 onKey('q', function(e) {
@@ -49,7 +50,7 @@ let retrieve_card_value = function(cards_deck,card_color,card_figure){
 }
 
 let game_title = Text({
-  text: '13 The Damned',
+  text: '🎭 13 The Damned 🎭',
   font: '58px Arial',
   color: 'yellow',
   x: 300,
@@ -93,7 +94,7 @@ let cards_sum_widget = Text({
 });
 
 let score_widget = Text({
-  text: 'Score : ' + cards_sum,
+  text: 'Score : ' + final_score,
   font: 'bold 20px Arial',
   color: 'white',
   x: 500,
@@ -101,7 +102,7 @@ let score_widget = Text({
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'left',
   update: function () {
-    this.text = 'Score: ' + cards_sum * game_points_multiplier,
+    this.text = 'Score: ' + final_score,
     this.textAlign = 'left'
   }
 });
@@ -190,21 +191,6 @@ let start_menu = Grid({
 });
 track(start,options,quit);
 
-
-/* let end_menu = Grid({
-  x: 500,
-  y: 200,
-  anchor: {x: 0.5, y: 0.5},
-
-  // add 15 pixels of space between each row
-  rowGap: 15,
-
-  // center the children
-  justify: 'center',
-
-  children: [start, quit]
-}); */
-
 let keep_button = Button({
   // sprite properties
   x: 500,
@@ -241,8 +227,13 @@ let keep_button = Button({
       this.context.stroke();
     }
   }),
-
- render() {
+  onDown: function() {
+    console.log('final score: ' + cards_sum * game_points_multiplier);
+    final_score += cards_sum * game_points_multiplier;
+    cards_sum = 0;
+    game_points_multiplier = 0;
+  },
+  render() {
     this.sprite.render();
     // focused by keyboard
     if (this.focused) {
@@ -258,11 +249,13 @@ let keep_button = Button({
     }
     // hovered by mouse
     else if (this.hovered) {
-      this.textNode.color = 'red';
+      this.textNode.color = 'white';
+      this.textNode.font = bold_font;
       canvas.style.cursor = 'pointer';
     }
     else  {
       this.textNode.color = 'white';
+      this.textNode.font = normal_font;
       canvas.style.cursor = 'initial';
     }
   }
@@ -320,6 +313,10 @@ class Card {
     this.returned     = true;
   }
 
+  is_pick(){
+    return this.kept;
+  }
+
   pick_card(){
     this.kept = true;
   }
@@ -368,7 +365,7 @@ class Card {
     console.log(`Card with text "${this.text.text}" clicked!`);
     // Additional actions on click can be added here
     this.show_card();
-    this.pick_card();
+    this.is_pick();
     this.add_card_value();
     game_points_multiplier += 1;
     console.log(game_cards)
