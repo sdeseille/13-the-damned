@@ -10,6 +10,7 @@ let gameboard_height = 3;
 let gameboard_width  = 4;
 let game_state = 'menu';
 let game_points_multiplier = 0;
+let current_picked_cards = [];
 let cards_sum = 0;
 let final_score = 0;
 const THIRTEEN = 13;
@@ -232,6 +233,7 @@ let keep_button = Button({
     final_score += cards_sum * game_points_multiplier;
     cards_sum = 0;
     game_points_multiplier = 0;
+    current_picked_cards = [];
   },
   render() {
     this.sprite.render();
@@ -317,6 +319,11 @@ class Card {
     return this.kept;
   }
 
+
+  is_lost(){
+    return this.lost;
+  }
+
   pick_card(){
     this.kept = true;
   }
@@ -346,6 +353,9 @@ class Card {
   }
 
   update(){
+    if (this.is_lost()){
+      this.sprite.color = 'gray';
+    }
     this.sprite.update();
     this.text.update();
   }
@@ -367,6 +377,7 @@ class Card {
     this.show_card();
     this.is_pick();
     this.add_card_value();
+    current_picked_cards.push(this);
     game_points_multiplier += 1;
     console.log(game_cards)
     console.log('Current multiplier: ' + game_points_multiplier);
@@ -384,6 +395,7 @@ class Card {
 function init_gameboard(){
   game_cards = [];
   cards_sum = 0;
+  final_score = 0;
   let generate_random = function(){
     game_deck = JSON.parse(JSON.stringify(full_deck))
     console.log(game_deck);
@@ -436,8 +448,14 @@ function have_you_been_cursed(current_card){
 
 function check_cards_sum(){
   if (cards_sum >= THIRTEEN){
-    //game_state = 'gameover';
     console.log('You reached damned number');
+    for (let card of current_picked_cards){
+      card.discard_card();
+      console.log(card.card_figure + ' - ' + card.is_lost());
+    }
+    cards_sum = 0;
+    game_points_multiplier = 0;
+    current_picked_cards = [];
   }
 }
 
