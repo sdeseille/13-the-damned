@@ -10,9 +10,11 @@ let gameboard_height = 3;
 let gameboard_width  = 4;
 let game_state = 'menu';
 let game_points_multiplier = 0;
+let number_of_returned_cards = 0;
 let current_picked_cards = [];
 let cards_sum = 0;
 let final_score = 0;
+const MAXCARDS = 12;
 const THIRTEEN = 13;
 
 onKey('q', function(e) {
@@ -68,6 +70,20 @@ let game_over = Text({
   y: 75,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center'
+});
+
+
+let game_won = Text({
+  text: '🎉Congratulation🎉\nYour score: ' + final_score,
+  font: 'italic 58px Arial',
+  color: 'blue',
+  x: 300,
+  y: 75,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center',
+  update: function () {
+    this.text = '🎉Congratulation🎉\nYour score: ' + final_score
+  }
 });
 
 let start_again = Text({
@@ -234,6 +250,9 @@ let keep_button = Button({
     cards_sum = 0;
     game_points_multiplier = 0;
     current_picked_cards = [];
+    if (is_game_ended(number_of_returned_cards)){
+      game_state = 'gamewon';
+    }
   },
   render() {
     this.sprite.render();
@@ -375,7 +394,7 @@ class Card {
     console.log(`Card with text "${this.text.text}" clicked!`);
     // Additional actions on click can be added here
     this.show_card();
-    this.is_pick();
+    number_of_returned_cards += 1;
     this.add_card_value();
     current_picked_cards.push(this);
     game_points_multiplier += 1;
@@ -392,10 +411,19 @@ class Card {
 
 }
 
+function is_game_ended(returned_cards){
+  if (returned_cards == MAXCARDS){
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function init_gameboard(){
   game_cards = [];
   cards_sum = 0;
   final_score = 0;
+  number_of_returned_cards = 0;
   let generate_random = function(){
     game_deck = JSON.parse(JSON.stringify(full_deck))
     console.log(game_deck);
@@ -478,6 +506,9 @@ let loop = GameLoop({  // create the main game loop
         break;
       case 'gameover':
         break;
+      case 'gamewon':
+        game_won.update();
+        break;
     }
   },
   render: function() { // render the game state
@@ -498,6 +529,10 @@ let loop = GameLoop({  // create the main game loop
         break;
       case 'gameover':
         game_over.render();
+        start_again.render();
+        break;
+      case 'gamewon':
+        game_won.render();
         start_again.render();
         break;
     }
