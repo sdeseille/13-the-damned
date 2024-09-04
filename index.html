@@ -2,10 +2,21 @@
 <head>
   <meta charset="utf-8" />
   <title>13 The Damned</title>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/simplex-noise/simplex-noise.js"></script>
   <script type="text/javascript" src="libs/kontra.min.js"></script>
-<!--   <script type="text/javascript" src="assets/js/cell.js" type="module"></script>
-  <script type="text/javascript" src="assets/js/grid.js" type="module"></script> -->
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;  /* Horizontally center the canvas */
+      align-items: center;      /* Vertically center the canvas */
+      background-color: #f0f0f0; /* Optional: Background color */
+    }
+    
+    canvas {
+      border: 1px solid #000; /* Optional: Add a border for visibility */
+    }
+  </style>
 </head>
 <body>
   <canvas
