@@ -81,6 +81,9 @@ let game_won = Text({
   y: 75,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
+  render: function() {
+    canvas.style.cursor = 'initial';
+  },
   update: function () {
     this.text = '🎉Congratulation🎉\nYour score: ' + final_score
   }
