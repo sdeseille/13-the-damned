@@ -14,7 +14,7 @@ let number_of_returned_cards = 0;
 let current_picked_cards = [];
 let cards_sum = 0;
 let final_score = 0;
-const MAXCARDS = 12;
+const MAXCARDS = gameboard_height * gameboard_width;
 const THIRTEEN = 13;
 
 onKey('q', function(e) {
