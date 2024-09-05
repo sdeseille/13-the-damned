@@ -63,22 +63,25 @@ let game_title = Text({
 });
 
 let game_over = Text({
-  text: '13 The Damned\nGame Over',
+  text: 'Game Over\n\nYour score: ' + final_score,
   font: 'italic 58px Arial',
   color: 'red',
   x: 300,
-  y: 75,
+  y: 100,
   anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center'
+  textAlign: 'center',
+  update: function () {
+    this.text = 'Game Over\nYour score: ' + final_score
+  }
 });
 
 
 let game_won = Text({
-  text: '🎉Congratulation🎉\nYour score: ' + final_score,
+  text: '🎉Congratulation🎉\n\nYour score: ' + final_score,
   font: 'italic 58px Arial',
   color: 'blue',
   x: 300,
-  y: 75,
+  y: 100,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
   update: function () {
@@ -91,7 +94,7 @@ let start_again = Text({
   font: 'bold 16px Arial',
   color: 'white',
   x: 300,
-  y: 200,
+  y: 225,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center'
 });
@@ -178,11 +181,11 @@ let options = Text({
   ...textOptions
 });
 
-let quit = Text({
-  text: 'Quit',
+let highscore = Text({
+  text: 'High Score',
   onDown: function() {
     // handle on down events on the sprite
-    console.log("Clicked on Quit");
+    console.log("Clicked on High Score");
   },
   onOver: function() {
     this.font = bold_font;
@@ -195,7 +198,7 @@ let quit = Text({
 
 let start_menu = Grid({
   x: 300,
-  y: 200,
+  y: 250,
   anchor: {x: 0.5, y: 0.5},
 
   // add 15 pixels of space between each row
@@ -204,9 +207,9 @@ let start_menu = Grid({
   // center the children
   justify: 'center',
 
-  children: [start, options, quit]
+  children: [start, options, highscore]
 });
-track(start,options,quit);
+track(start,options,highscore);
 
 let keep_button = Button({
   // sprite properties
@@ -505,6 +508,7 @@ let loop = GameLoop({  // create the main game loop
         check_cards_sum();
         break;
       case 'gameover':
+        game_over.update();
         break;
       case 'gamewon':
         game_won.update();
