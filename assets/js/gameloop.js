@@ -1,4 +1,4 @@
-let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initKeys, onKey, initInput, Button } = kontra;
+let { init, Sprite, Text, Grid, GameLoop, track, initPointer, initKeys, onKey, Button } = kontra;
 
 let { canvas, context } = init();
 initPointer();
@@ -13,13 +13,22 @@ let game_points_multiplier = 0;
 let number_of_returned_cards = 0;
 let current_picked_cards = [];
 let cards_sum = 0;
-let final_score = 0;
+let player_score = 0;
+let player_name = '';
+let is_name_entered = false;
 const MAXCARDS = gameboard_height * gameboard_width;
 const THIRTEEN = 13;
+const MAX_HIGH_SCORES = 5;
 
 onKey('q', function(e) {
   // return to the game menu
   console.log("q key pressed ! ");
+  game_state = 'menu';
+});
+
+onKey('r', function(e) {
+  // return to the game menu
+  console.log("r key pressed ! ");
   game_state = 'menu';
 });
 
@@ -52,6 +61,63 @@ let retrieve_card_value = function(cards_deck,card_color,card_figure){
   return card_value;
 }
 
+function get_highscores() {
+  // Retrieve scores from localStorage or return an empty array if not present
+  return JSON.parse(localStorage.getItem('13_the_damned_highscores')) || [];
+}
+
+function save_highscore(newScore, playerName) {
+  const highScores = get_highscores();
+  const newHighScore = { score: newScore, name: playerName };
+
+  // Add new score and sort the array in descending order
+  highScores.push(newHighScore);
+  highScores.sort((a, b) => b.score - a.score);
+
+  // Limit the array to top MAX_HIGH_SCORES scores
+  highScores.splice(MAX_HIGH_SCORES);
+
+  // Save back to localStorage
+  localStorage.setItem('13_the_damned_highscores', JSON.stringify(highScores));
+}
+
+// Function to generate table rows
+function generateScoreTable(highScores) {
+  let textObjects = [];
+  let startY = 200; // Starting Y position for the first row
+  let rowHeight = 40; // Height between each row
+
+  // Add a header
+  textObjects.push(Text({
+    text: 'Rank       Name     Score',
+    font: '20px Arial',
+    color: 'white',
+    x: 130,
+    y: startY - 40,
+    anchor: {x: -0.25, y: 0.5},
+    textAlign: 'center'
+  }));
+
+  // Create Text objects for each high score entry
+  highScores.forEach((entry, index) => {
+    let rowText = `${index + 1}          ${entry.name}         ${entry.score}`;
+    
+    let rowTextObject = Text({
+      text: rowText,
+      font: '20px Arial',
+      color: 'white',
+      x: 130,
+      y: startY + (index * rowHeight),
+      anchor: {x: -0.5, y: 0.5},
+      textAlign: 'center'
+    });
+
+    textObjects.push(rowTextObject);
+  });
+
+  return textObjects;
+}
+
 let game_title = Text({
   text: '🎭 13 The Damned 🎭',
   font: '58px Arial',
@@ -62,8 +128,19 @@ let game_title = Text({
   textAlign: 'center'
 });
 
+let highscores_title = Text({
+  text: '🏆 === High Scores === 🏆',
+  font: '48px Arial',
+  color: 'gold',
+  x: 300,
+  y: 75,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center'
+});
+
+
 let game_over = Text({
-  text: 'Game Over\n\nYour score: ' + final_score,
+  text: 'Game Over\n\nYour score: ' + player_score,
   font: 'italic 58px Arial',
   color: 'red',
   x: 300,
@@ -71,13 +148,13 @@ let game_over = Text({
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
   update: function () {
-    this.text = 'Game Over\nYour score: ' + final_score
+    this.text = 'Game Over\nYour score: ' + player_score
   }
 });
 
 
 let game_won = Text({
-  text: '🎉Congratulation🎉\n\nYour score: ' + final_score,
+  text: '🎉Congratulation🎉\n\nYour score: ' + player_score,
   font: 'italic 58px Arial',
   color: 'blue',
   x: 300,
@@ -85,7 +162,7 @@ let game_won = Text({
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
   update: function () {
-    this.text = '🎉Congratulation🎉\nYour score: ' + final_score
+    this.text = '🎉Congratulation🎉\nYour score: ' + player_score
   }
 });
 
@@ -114,7 +191,7 @@ let cards_sum_widget = Text({
 });
 
 let score_widget = Text({
-  text: 'Score : ' + final_score,
+  text: 'Score : ' + player_score,
   font: 'bold 20px Arial',
   color: 'white',
   x: 500,
@@ -122,7 +199,7 @@ let score_widget = Text({
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'left',
   update: function () {
-    this.text = 'Score: ' + final_score,
+    this.text = 'Score: ' + player_score,
     this.textAlign = 'left'
   }
 });
@@ -182,10 +259,11 @@ let options = Text({
 });
 
 let highscore = Text({
-  text: 'High Score',
+  text: 'High Scores',
   onDown: function() {
     // handle on down events on the sprite
     console.log("Clicked on High Score");
+    game_state = 'highscores';
   },
   onOver: function() {
     this.font = bold_font;
@@ -249,7 +327,7 @@ let keep_button = Button({
   }),
   onDown: function() {
     console.log('final score: ' + cards_sum * game_points_multiplier);
-    final_score += cards_sum * game_points_multiplier;
+    player_score += cards_sum * game_points_multiplier;
     cards_sum = 0;
     game_points_multiplier = 0;
     current_picked_cards = [];
@@ -425,7 +503,7 @@ function is_game_ended(returned_cards){
 function init_gameboard(){
   game_cards = [];
   cards_sum = 0;
-  final_score = 0;
+  player_score = 0;
   number_of_returned_cards = 0;
   let generate_random = function(){
     game_deck = JSON.parse(JSON.stringify(full_deck))
@@ -489,9 +567,11 @@ function check_cards_sum(){
     current_picked_cards = [];
   }
 }
-
+let scoreTable = [];
 let loop = GameLoop({  // create the main game loop
   update: function() { // update the game state
+    let highScores = [];
+    // Generate the high score table
     switch (game_state) {
       case 'menu':
         break;
@@ -509,9 +589,28 @@ let loop = GameLoop({  // create the main game loop
         break;
       case 'gameover':
         game_over.update();
+        // Check if player made a high score
+        highScores = get_highscores();
+        if (player_score > highScores[highScores.length - 1]?.score || highScores.length < MAX_HIGH_SCORES) {
+          // Player has a high score, ask for their name
+          let playerName = prompt('New High Score! Enter your name:');
+          save_highscore(player_score, playerName);
+        }
+        scoreTable = generateScoreTable(get_highscores());
         break;
       case 'gamewon':
         game_won.update();
+        // Check if player made a high score
+        highScores = get_highscores();
+        if (player_score > highScores[highScores.length - 1]?.score || highScores.length < MAX_HIGH_SCORES) {
+          // Player has a high score, ask for their name
+          let playerName = prompt('New High Score! Enter your name:');
+          save_highscore(player_score, playerName);
+        }
+        scoreTable = generateScoreTable(get_highscores());
+        break;
+      case 'highscores':
+        scoreTable = generateScoreTable(get_highscores());
         break;
     }
   },
@@ -538,6 +637,11 @@ let loop = GameLoop({  // create the main game loop
       case 'gamewon':
         game_won.render();
         start_again.render();
+        break;
+      case 'highscores':
+        highscores_title.render()
+        // Render the high score table
+        scoreTable.forEach(row => row.render());
         break;
     }
   }
