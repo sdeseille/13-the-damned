@@ -20,12 +20,6 @@ const MAXCARDS = gameboard_height * gameboard_width;
 const THIRTEEN = 13;
 const MAX_HIGH_SCORES = 5;
 
-onKey('q', function(e) {
-  // return to the game menu
-  console.log("q key pressed ! ");
-  game_state = 'menu';
-});
-
 onKey('r', function(e) {
   // return to the game menu
   console.log("r key pressed ! ");
@@ -87,20 +81,29 @@ function generateScoreTable(highScores) {
   let startY = 200; // Starting Y position for the first row
   let rowHeight = 40; // Height between each row
 
-  // Add a header
+  // Define column widths
+  const rankWidth = 15;
+  const nameWidth = 15;
+  const scoreWidth = 10;
+
+  // Create the header row with padded text
+  let headerText = `Rank`.padEnd(rankWidth) + `Name`.padEnd(nameWidth) + `Score`.padStart(scoreWidth);
   textObjects.push(Text({
-    text: 'Rank       Name     Score',
+    text: headerText,
     font: '20px Arial',
     color: 'white',
     x: 130,
     y: startY - 40,
-    anchor: {x: -0.25, y: 0.5},
-    textAlign: 'center'
+    // anchor: {x: -0.25, y: 0.5},
+    // textAlign: 'center'
   }));
 
   // Create Text objects for each high score entry
   highScores.forEach((entry, index) => {
-    let rowText = `${index + 1}          ${entry.name}         ${entry.score}`;
+    // Format the row with padding for alignment
+    let rowText = `${index + 1}`.padEnd(rankWidth) +
+                  `${entry.name}`.padEnd(nameWidth) +
+                  `${entry.score}`.padStart(scoreWidth);
     
     let rowTextObject = Text({
       text: rowText,
@@ -108,8 +111,8 @@ function generateScoreTable(highScores) {
       color: 'white',
       x: 130,
       y: startY + (index * rowHeight),
-      anchor: {x: -0.5, y: 0.5},
-      textAlign: 'center'
+      // anchor: {x: -0.5, y: 0.5},
+      // textAlign: 'center'
     });
 
     textObjects.push(rowTextObject);
@@ -167,7 +170,7 @@ let game_won = Text({
 });
 
 let start_again = Text({
-  text: 'Press [q] to restart',
+  text: 'Press [r] to restart',
   font: 'bold 16px Arial',
   color: 'white',
   x: 300,
@@ -591,12 +594,6 @@ let loop = GameLoop({  // create the main game loop
         game_over.update();
         // Check if player made a high score
         highScores = get_highscores();
-        if (player_score > highScores[highScores.length - 1]?.score || highScores.length < MAX_HIGH_SCORES) {
-          // Player has a high score, ask for their name
-          let playerName = prompt('New High Score! Enter your name:');
-          save_highscore(player_score, playerName);
-        }
-        scoreTable = generateScoreTable(get_highscores());
         break;
       case 'gamewon':
         game_won.update();
@@ -604,10 +601,14 @@ let loop = GameLoop({  // create the main game loop
         highScores = get_highscores();
         if (player_score > highScores[highScores.length - 1]?.score || highScores.length < MAX_HIGH_SCORES) {
           // Player has a high score, ask for their name
-          let playerName = prompt('New High Score! Enter your name:');
-          save_highscore(player_score, playerName);
+          let playerName = prompt('New High Score! Enter your nickname:');
+          console.log('playerName: ['+playerName+']');
+          let trimmed_playerName = playerName.substring(0, 3);
+          console.log('trimmed_playerName: ['+trimmed_playerName+']');
+          save_highscore(player_score, trimmed_playerName);
         }
         scoreTable = generateScoreTable(get_highscores());
+        game_state = 'highscores';
         break;
       case 'highscores':
         scoreTable = generateScoreTable(get_highscores());
