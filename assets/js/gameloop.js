@@ -78,45 +78,78 @@ function save_highscore(newScore, playerName) {
 // Function to generate table rows
 function generateScoreTable(highScores) {
   let textObjects = [];
-  let startY = 200; // Starting Y position for the first row
-  let rowHeight = 40; // Height between each row
+  let startY = 150; // Starting Y position for the first row
+  let rowHeight = 40; // Space between each row
+  let last_y_pos = startY; // Used by text message proposing to restart a game
 
-  // Define column widths
-  const rankWidth = 15;
-  const nameWidth = 15;
-  const scoreWidth = 10;
+  // Column x positions for rank, name, and score
+  const rankX = 130;
+  const nameX = 230;
+  const scoreX = 430;
 
-  // Create the header row with padded text
-  let headerText = `Rank`.padEnd(rankWidth) + `Name`.padEnd(nameWidth) + `Score`.padStart(scoreWidth);
+  // Header row
   textObjects.push(Text({
-    text: headerText,
+    text: 'Rank',
     font: '20px Arial',
     color: 'white',
-    x: 130,
+    x: rankX,
     y: startY - 40,
-    // anchor: {x: -0.25, y: 0.5},
-    // textAlign: 'center'
+  }));
+  textObjects.push(Text({
+    text: 'Name',
+    font: '20px Arial',
+    color: 'white',
+    x: nameX,
+    y: startY - 40,
+  }));
+  textObjects.push(Text({
+    text: 'Score',
+    font: '20px Arial',
+    color: 'white',
+    x: scoreX,
+    y: startY - 40,
   }));
 
-  // Create Text objects for each high score entry
+  // Loop through high scores and create Text objects for each entry
   highScores.forEach((entry, index) => {
-    // Format the row with padding for alignment
-    let rowText = `${index + 1}`.padEnd(rankWidth) +
-                  `${entry.name}`.padEnd(nameWidth) +
-                  `${entry.score}`.padStart(scoreWidth);
-    
-    let rowTextObject = Text({
-      text: rowText,
+    let yPos = startY + (index * rowHeight);
+    last_y_pos = yPos;
+
+    textObjects.push(Text({
+      text: `${index + 1}`.padStart(3,'0'),  // Rank
       font: '20px Arial',
       color: 'white',
-      x: 130,
-      y: startY + (index * rowHeight),
-      // anchor: {x: -0.5, y: 0.5},
-      // textAlign: 'center'
-    });
+      x: rankX,
+      y: yPos
+    }));
 
-    textObjects.push(rowTextObject);
+    textObjects.push(Text({
+      text: entry.name,  // Player Name
+      font: '20px Arial',
+      color: 'white',
+      x: nameX,
+      y: yPos,
+    }));
+
+    textObjects.push(Text({
+      text: entry.score.toString(),  // Player Score
+      font: '20px Arial',
+      color: 'white',
+      x: scoreX,
+      y: yPos,
+    }));
   });
+
+  // Add a message to restart a game
+  textObjects.push(Text({
+    text: 'Press [r] to restart',
+    font: 'bold 16px Arial',
+    color: 'white',
+    x: 300,
+    y: last_y_pos + (rowHeight * 2),
+    anchor: {x: 0.5, y: 0.5},
+    textAlign: 'center'
+  }));
 
   return textObjects;
 }
