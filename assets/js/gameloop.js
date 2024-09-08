@@ -16,6 +16,16 @@ let cards_sum = 0;
 let player_score = 0;
 let player_name = '';
 let is_name_entered = false;
+let difficulty_level = 'easy'; // Difficulty level (easy,normal,hard)
+
+bold_font = 'bold 20px Arial, sans-serif';
+normal_font = '20px Arial, sans-serif';
+
+let textOptions = {
+  color: 'white',
+  font: normal_font
+};
+
 const MAXCARDS = gameboard_height * gameboard_width;
 const THIRTEEN = 13;
 const MAX_HIGH_SCORES = 5;
@@ -186,7 +196,6 @@ let highscores_title = Text({
   textAlign: 'center'
 });
 
-
 let game_over = Text({
   text: 'Game Over\n\nYour score: ' + player_score,
   font: 'italic 58px Arial',
@@ -200,7 +209,6 @@ let game_over = Text({
   }
 });
 
-
 let game_won = Text({
   text: '🎉Congratulation🎉\n\nYour score: ' + player_score,
   font: 'italic 58px Arial',
@@ -213,6 +221,66 @@ let game_won = Text({
     this.text = '🎉Congratulation🎉\nYour score: ' + player_score
   }
 });
+
+// Difficulty level buttons
+let easyButton = Text({
+  text: 'Easy',
+  font: '20px Arial',
+  color: 'white',
+  x: 100,
+  y: 100,
+  onDown() {
+    difficulty_level = 'easy';
+    console.log('Difficulty set to Easy');
+  },
+  onOver: function() {
+    this.font = bold_font;
+  },
+  onOut: function() {
+    this.font = normal_font;
+  }
+});
+
+let mediumButton = Text({
+  text: 'Normal',
+  font: '20px Arial',
+  color: 'white',
+  x: 100,
+  y: 150,
+  onDown() {
+    difficulty_level = 'normal';
+    console.log('Difficulty set to Normal');
+  },
+  onOver: function() {
+    this.font = bold_font;
+  },
+  onOut: function() {
+    this.font = normal_font;
+  }
+});
+
+let hardButton = Text({
+  text: 'Hard',
+  font: '20px Arial',
+  color: 'white',
+  x: 100,
+  y: 200,
+  onDown() {
+    difficulty_level = 'hard';
+    console.log('Difficulty set to Hard');
+  },
+  onOver: function() {
+    this.font = bold_font;
+  },
+  onOut: function() {
+    this.font = normal_font;
+  }
+});
+
+// Track these objects for pointer (mouse/touch) interaction
+track(easyButton);
+track(mediumButton);
+track(hardButton);
 
 let start_again = Text({
   text: 'Press [r] to restart',
@@ -265,14 +333,6 @@ let bonus_widget = Text({
   }
 });
 
-bold_font = 'bold 20px Arial, sans-serif';
-normal_font = '20px Arial, sans-serif';
-
-let textOptions = {
-  color: 'white',
-  font: normal_font
-};
-
 let start = Text({
   text: 'Start',
   onDown: function() {
@@ -296,6 +356,7 @@ let options = Text({
   onDown: function() {
     // handle on down events on the sprite
     console.log("Clicked on Difficulty");
+    game_state = 'difficultychoice';
   },
   onOver: function() {
     this.font = bold_font;
@@ -548,6 +609,37 @@ function is_game_ended(returned_cards){
   }
 }
 
+function filter_card_by_difficulty(color,level,number_of_king){
+  let max_damned=0;
+  let idx = Math.floor(Math.random() * game_deck[color].length);
+  console.log(game_deck[color][idx])
+  if (game_deck[color][idx] == 'king') {
+    number_of_king += 1;
+    console.log('number of king: ' + number_of_king);
+  }
+  switch (level) {
+    case 'easy':
+      console.log('difficulty easy')
+      break;
+    case 'normal':
+      console.log('difficulty normal')
+      max_damned=1;
+      break;
+    case 'hard':
+      console.log('difficulty hard')
+      max_damned=2;
+      break;
+  }
+  console.log('damned number: ' + max_damned);
+  while(number_of_king > max_damned){
+    idx = Math.floor(Math.random() * game_deck[color].length);
+    if (game_deck[color][idx] != 'king') {
+      number_of_king -= 1;
+    }
+  }
+  return idx; 
+}
+
 function init_gameboard(){
   game_cards = [];
   cards_sum = 0;
@@ -557,12 +649,15 @@ function init_gameboard(){
     game_deck = JSON.parse(JSON.stringify(full_deck))
     console.log(game_deck);
     let random_cards = {};
+    let number_of_king=0;
     for (let i = 1; i <= gameboard_height * gameboard_width; i++) {
       let card_color=card_colours[Math.floor(Math.random() * 4)]
       if (! random_cards.hasOwnProperty(card_color)){
         random_cards[card_color] = [];
       }
-      card_idx=Math.floor(Math.random() * game_deck[card_color].length);
+      //let card_idx=Math.floor(Math.random() * game_deck[card_color].length);
+      let card_idx=filter_card_by_difficulty(card_color,difficulty_level,number_of_king);
+      console.log('number of king: ' + number_of_king);
       random_cards[card_color].push(game_deck[card_color][card_idx]);
       game_deck[card_color].splice(card_idx,1);
     }
@@ -623,6 +718,9 @@ let loop = GameLoop({  // create the main game loop
     switch (game_state) {
       case 'menu':
         break;
+      case 'difficultychoice':
+        console.log('Difficulty_choose: ' + difficulty_level);
+        break;
       case 'play':
         for (card in game_cards){
           //console.log(card);
@@ -665,6 +763,12 @@ let loop = GameLoop({  // create the main game loop
       case 'menu':
         game_title.render();
         start_menu.render();
+        break;
+      case 'difficultychoice':
+        easyButton.render();
+        mediumButton.render();
+        hardButton.render();
+        start_again.render();
         break;
       case 'play':
         for (card in game_cards){
