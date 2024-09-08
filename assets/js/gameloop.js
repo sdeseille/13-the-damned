@@ -78,14 +78,14 @@ function save_highscore(newScore, playerName) {
 // Function to generate table rows
 function generateScoreTable(highScores) {
   let textObjects = [];
-  let startY = 150; // Starting Y position for the first row
+  let startY = 160; // Starting Y position for the first row
   let rowHeight = 40; // Space between each row
   let last_y_pos = startY; // Used by text message proposing to restart a game
 
   // Column x positions for rank, name, and score
-  const rankX = 130;
-  const nameX = 230;
-  const scoreX = 430;
+  const rankX = 200;
+  const nameX = 300;
+  const scoreX = 400;
 
   // Header row
   textObjects.push(Text({
@@ -94,6 +94,8 @@ function generateScoreTable(highScores) {
     color: 'white',
     x: rankX,
     y: startY - 40,
+    anchor: {x: 0.5, y: 0.5},
+    textAlign: 'center'
   }));
   textObjects.push(Text({
     text: 'Name',
@@ -101,6 +103,8 @@ function generateScoreTable(highScores) {
     color: 'white',
     x: nameX,
     y: startY - 40,
+    anchor: {x: 0.5, y: 0.5},
+    textAlign: 'center'
   }));
   textObjects.push(Text({
     text: 'Score',
@@ -108,6 +112,8 @@ function generateScoreTable(highScores) {
     color: 'white',
     x: scoreX,
     y: startY - 40,
+    anchor: {x: 0.5, y: 0.5},
+    textAlign: 'center'
   }));
 
   // Loop through high scores and create Text objects for each entry
@@ -120,7 +126,9 @@ function generateScoreTable(highScores) {
       font: '20px Arial',
       color: 'white',
       x: rankX,
-      y: yPos
+      y: yPos,
+      anchor: {x: 0.5, y: 0.5},
+      textAlign: 'center'
     }));
 
     textObjects.push(Text({
@@ -129,14 +137,18 @@ function generateScoreTable(highScores) {
       color: 'white',
       x: nameX,
       y: yPos,
+      anchor: {x: 0.5, y: 0.5},
+      textAlign: 'center'
     }));
 
     textObjects.push(Text({
-      text: entry.score.toString(),  // Player Score
+      text: entry.score.toString().padStart(3,'0'),  // Player Score
       font: '20px Arial',
       color: 'white',
       x: scoreX,
       y: yPos,
+      anchor: {x: 0.5, y: 0.5},
+      textAlign: 'center'
     }));
   });
 
@@ -146,7 +158,7 @@ function generateScoreTable(highScores) {
     font: 'bold 16px Arial',
     color: 'white',
     x: 300,
-    y: last_y_pos + (rowHeight * 2),
+    y: last_y_pos + (rowHeight * 1.5),
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
   }));
