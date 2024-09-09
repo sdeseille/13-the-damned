@@ -261,11 +261,14 @@ let start_again = Text({
 let title_widget = Text({
   text: '🎭 13 The Damned\n('+difficulty_level+')',
   font: 'bold 20px Arial',
-  color: 'white',
+  color: 'yellow',
   x: 500,
   y: 50,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
+  update: function () {
+    this.text = '🎭 13 The Damned\n('+difficulty_level+')'
+  }
 });
 
 let cards_sum_widget = Text({
@@ -702,6 +705,7 @@ let loop = GameLoop({  // create the main game loop
           //console.log(card);
           game_cards[card].update();
           have_you_been_cursed(game_cards[card]);
+          title_widget.update();
           cards_sum_widget.update();
           bonus_widget.update();
           score_widget.update();
