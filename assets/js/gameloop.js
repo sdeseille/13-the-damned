@@ -16,6 +16,7 @@ let cards_sum = 0;
 let player_score = 0;
 let player_name = '';
 let is_name_entered = false;
+let banner = {};
 let difficulty_level = 'easy'; // Difficulty level (easy,normal,hard)
 
 bold_font = 'bold 20px Arial, sans-serif';
@@ -176,25 +177,21 @@ function generateScoreTable(highScores) {
   return textObjects;
 }
 
-let game_title = Text({
-  text: '🎭 13 The Damned 🎭',
-  font: '58px Arial',
-  color: 'yellow',
-  x: 300,
-  y: 75,
-  anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center'
-});
+function new_banner(msg, colorname) {
+  return Text({
+    text: msg,
+    font: '54px Arial',
+    color: colorname,
+    x: 300,
+    y: 75,
+    anchor: {x: 0.5, y: 0.5},
+    textAlign: 'center'
+  });
+}
 
-let highscores_title = Text({
-  text: '🏆 === High Scores === 🏆',
-  font: '48px Arial',
-  color: 'gold',
-  x: 300,
-  y: 75,
-  anchor: {x: 0.5, y: 0.5},
-  textAlign: 'center'
-});
+let game_title = new_banner('🎭 13 The Damned 🎭', 'yellow');
+let highscores_title = new_banner('🏆 -= High Scores =- 🏆', 'gold');
+let difficulty_level_title = new_banner('💪🏼 Select Difficulty 💪🏼', 'silver');
 
 let game_over = Text({
   text: 'Game Over\n\nYour score: ' + player_score,
@@ -223,59 +220,29 @@ let game_won = Text({
 });
 
 // Difficulty level buttons
-let easyButton = Text({
-  text: 'Easy',
-  font: '20px Arial',
-  color: 'white',
-  x: 100,
-  y: 100,
-  onDown() {
-    difficulty_level = 'easy';
-    console.log('Difficulty set to Easy');
-  },
-  onOver: function() {
-    this.font = bold_font;
-  },
-  onOut: function() {
-    this.font = normal_font;
-  }
-});
+function option_button(text, xpos, ypos, colorname){
+  return Text({
+    text: capitalize_first_letter(text),
+    font: '20px Arial',
+    color: colorname,
+    x: xpos,
+    y: ypos,
+    onDown() {
+      difficulty_level = text;
+      console.log('Difficulty set to ' + capitalize_first_letter(text));
+    },
+    onOver: function() {
+      this.font = bold_font;
+    },
+    onOut: function() {
+      this.font = normal_font;
+    }
+  });
+}
 
-let mediumButton = Text({
-  text: 'Normal',
-  font: '20px Arial',
-  color: 'white',
-  x: 100,
-  y: 150,
-  onDown() {
-    difficulty_level = 'normal';
-    console.log('Difficulty set to Normal');
-  },
-  onOver: function() {
-    this.font = bold_font;
-  },
-  onOut: function() {
-    this.font = normal_font;
-  }
-});
-
-let hardButton = Text({
-  text: 'Hard',
-  font: '20px Arial',
-  color: 'white',
-  x: 100,
-  y: 200,
-  onDown() {
-    difficulty_level = 'hard';
-    console.log('Difficulty set to Hard');
-  },
-  onOver: function() {
-    this.font = bold_font;
-  },
-  onOut: function() {
-    this.font = normal_font;
-  }
-});
+let easyButton = option_button('easy', 150, 150, 'white');
+let mediumButton = option_button('medium', 200+easyButton.width, 150, 'white');
+let hardButton = option_button('hard', 300+mediumButton.width, 150, 'white');
 
 // Track these objects for pointer (mouse/touch) interaction
 track(easyButton);
@@ -765,6 +732,7 @@ let loop = GameLoop({  // create the main game loop
         start_menu.render();
         break;
       case 'difficultychoice':
+        difficulty_level_title.render();
         easyButton.render();
         mediumButton.render();
         hardButton.render();
