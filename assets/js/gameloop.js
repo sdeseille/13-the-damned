@@ -16,7 +16,6 @@ let cards_sum = 0;
 let player_score = 0;
 let player_name = '';
 let is_name_entered = false;
-let banner = {};
 let difficulty_level = 'easy'; // Difficulty level (easy,normal,hard)
 
 bold_font = 'bold 20px Arial, sans-serif';
@@ -259,12 +258,22 @@ let start_again = Text({
   textAlign: 'center'
 });
 
+let title_widget = Text({
+  text: '🎭 13 The Damned\n('+difficulty_level+')',
+  font: 'bold 20px Arial',
+  color: 'white',
+  x: 500,
+  y: 50,
+  anchor: {x: 0.5, y: 0.5},
+  textAlign: 'center',
+});
+
 let cards_sum_widget = Text({
   text: 'Cards sum: ' + cards_sum,
   font: 'bold 20px Arial',
   color: 'white',
   x: 500,
-  y: 50,
+  y: 150,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'left',
   update: function () {
@@ -278,7 +287,7 @@ let score_widget = Text({
   font: 'bold 20px Arial',
   color: 'white',
   x: 500,
-  y: 100,
+  y: 200,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'left',
   update: function () {
@@ -292,7 +301,7 @@ let bonus_widget = Text({
   font: 'bold 20px Arial',
   color: 'white',
   x: 500,
-  y: 150,
+  y: 250,
   anchor: {x: 0.5, y: 0.5},
   textAlign: 'center',
   update: function () {
@@ -318,7 +327,7 @@ let start = Text({
   ...textOptions
 });
 
-let options = Text({
+let difficulty = Text({
   text: 'Difficulty',
   onDown: function() {
     // handle on down events on the sprite
@@ -361,9 +370,9 @@ let start_menu = Grid({
   // center the children
   justify: 'center',
 
-  children: [start, options, highscore]
+  children: [start, difficulty, highscore]
 });
-track(start,options,highscore);
+track(start,difficulty,highscore);
 
 let keep_button = Button({
   // sprite properties
@@ -742,6 +751,7 @@ let loop = GameLoop({  // create the main game loop
         for (card in game_cards){
           //console.log(card);
           game_cards[card].render();
+          title_widget.render();
           cards_sum_widget.render();
           bonus_widget.render();
           score_widget.render();
