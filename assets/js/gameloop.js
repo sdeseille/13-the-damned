@@ -29,6 +29,10 @@ let textOptions = {
 const MAXCARDS = gameboard_height * gameboard_width;
 const THIRTEEN = 13;
 const MAX_HIGH_SCORES = 5;
+const EASYMULTIPLIER = 0.75; // Difficulty level multiplier
+const NORMALMULTIPLIER = 1; // Difficulty level multiplier
+const HARDMULTIPLIER = 2; // Difficulty level multiplier
+let difficulty_multiplier = EASYMULTIPLIER;
 
 onKey('r', function(e) {
   // return to the game menu
@@ -219,7 +223,7 @@ let game_won = Text({
 });
 
 // Difficulty level buttons
-function option_button(text, xpos, ypos, colorname){
+function option_button(text, xpos, ypos, colorname,ratio){
   return Text({
     text: capitalize_first_letter(text),
     font: '20px Arial',
@@ -228,6 +232,7 @@ function option_button(text, xpos, ypos, colorname){
     y: ypos,
     onDown() {
       difficulty_level = text;
+      difficulty_multiplier = ratio;
       console.log('Difficulty set to ' + capitalize_first_letter(text));
     },
     onOver: function() {
@@ -239,9 +244,9 @@ function option_button(text, xpos, ypos, colorname){
   });
 }
 
-let easyButton = option_button('easy', 150, 150, 'white');
-let mediumButton = option_button('medium', 200+easyButton.width, 150, 'white');
-let hardButton = option_button('hard', 300+mediumButton.width, 150, 'white');
+let easyButton = option_button('easy', 150, 150, 'white', EASYMULTIPLIER);
+let mediumButton = option_button('medium', 200+easyButton.width, 150, 'white', NORMALMULTIPLIER);
+let hardButton = option_button('hard', 300+mediumButton.width, 150, 'white', HARDMULTIPLIER);
 
 // Track these objects for pointer (mouse/touch) interaction
 track(easyButton);
@@ -414,14 +419,94 @@ let keep_button = Button({
     }
   }),
   onDown: function() {
-    console.log('final score: ' + cards_sum * game_points_multiplier);
     player_score += cards_sum * game_points_multiplier;
     cards_sum = 0;
     game_points_multiplier = 0;
     current_picked_cards = [];
     if (is_game_ended(number_of_returned_cards)){
+      player_score = Math.ceil(player_score * difficulty_multiplier);
+      console.log('final score: ' + player_score);
       game_state = 'gamewon';
     }
+    // Reset pressed state after the action
+    this.pressed = false;
+  },
+  render() {
+    this.sprite.render();
+    // focused by keyboard
+    if (this.focused) {
+      this.context.setLineDash([8,10]);
+      this.context.lineWidth = 3;
+      this.context.strokeStyle = 'red';
+      this.context.strokeRect(0, 0, this.width, this.height);
+    }
+
+    // pressed by mouse, touch, or enter/space on keyboard
+    if (this.pressed) {
+      this.textNode.color = 'yellow';
+    }
+    // hovered by mouse
+    else if (this.hovered) {
+      this.textNode.color = 'white';
+      this.textNode.font = bold_font;
+      canvas.style.cursor = 'pointer';
+    }
+    else  {
+      this.textNode.color = 'white';
+      this.textNode.font = normal_font;
+      canvas.style.cursor = 'initial';
+    }
+  }
+});
+
+let endgame_button = Button({
+  // sprite properties
+  x: 495,
+  y: 350,
+  anchor: {x: 0.5, y: 0.5},
+
+  // text properties
+  text: {
+    text: 'End Game',
+    color: 'white',
+    font: '20px Arial, sans-serif',
+    anchor: {x: 0.5, y: 0.5}
+  },
+
+  // button properties
+  padX: 20,
+  padY: 10,
+
+  sprite: Sprite({
+    x: this.x,
+    y: this.y,
+    width: 150,
+    height: 40,
+    color: 'orange',
+    //onDown: this.onPointerDown.bind(this),
+    radius: 5,
+    render: function() {
+      this.context.fillStyle = this.color;
+      this.context.strokeStyle = 'black';
+      this.context.lineWidth = 3;
+      this.context.beginPath();
+      this.context.roundRect(0, 0, this.width, this.height, this.radius);
+      this.context.fill();
+      this.context.stroke();
+    }
+  }),
+  onDown: function() {
+    console.log('final score: ' + cards_sum * game_points_multiplier);
+    player_score += cards_sum * game_points_multiplier;
+    player_score = Math.ceil(player_score * difficulty_multiplier);
+    console.log('final score: ' + player_score);
+    cards_sum = 0;
+    game_points_multiplier = 0;
+    current_picked_cards = [];
+    game_state = 'gamewon';
+
+    // Reset pressed state after the action
+    this.pressed = false;
   },
   render() {
     this.sprite.render();
@@ -760,6 +845,7 @@ let loop = GameLoop({  // create the main game loop
           bonus_widget.render();
           score_widget.render();
           keep_button.render();
+          endgame_button.render();
         }
         break;
       case 'gameover':
