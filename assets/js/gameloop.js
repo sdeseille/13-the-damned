@@ -193,7 +193,7 @@ function new_banner(msg, colorname) {
 }
 
 let game_title = new_banner('🎭 13 The Damned 🎭', 'yellow');
-let highscores_title = new_banner('🏆 -= High Scores =- 🏆', 'gold');
+let highscores_title = new_banner('🏆 -= Highscore =- 🏆', 'gold');
 let difficulty_level_title = new_banner('💪🏼 Select Difficulty 💪🏼', 'silver');
 
 let game_over = Text({
@@ -352,7 +352,7 @@ let difficulty = Text({
 });
 
 let highscore = Text({
-  text: 'High Scores',
+  text: 'Highscore',
   onDown: function() {
     // handle on down events on the sprite
     console.log("Clicked on High Score");
