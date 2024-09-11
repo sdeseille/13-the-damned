@@ -543,7 +543,7 @@ let card_width = (canvas.width / gameboard_width) - 60;
 let card_height = card_width * 1.3;
 
 class Card {
-  constructor(x, y, width, height, color, card_color, card_figure) {
+  constructor(x, y, width, height, color, card_color, card_figure, text_color) {
     this.card_color = card_color;
     this.card_figure = card_figure;
     this.color = color;
@@ -571,8 +571,8 @@ class Card {
 
     this.text = Text({
       text: capitalize_first_letter(card_figure) + '\n\n' + this.card_icon(),
-      font: '16px Arial',
-      color: 'black',
+      font: 'bold 16px Arial',
+      color: text_color,
       x: x + width / 2,
       y: y + height / 2,
       anchor: { x: 0.5, y: 0.5 },
@@ -748,7 +748,8 @@ function init_gameboard(){
         card_Y += card_height + 10;
         cards_by_line = 0;
       }
-      let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_color, picked_cards[card_color][card]);
+      let card_text_color = ((card_color == 'heart') || (card_color  == 'diamond')) ? 'red' : 'black';
+      let card_symbol = new Card(card_X, card_Y, card_width, card_height, 'blue', card_color, picked_cards[card_color][card],card_text_color);
       game_cards.push(card_symbol);
       cards_by_line += 1;
     }
