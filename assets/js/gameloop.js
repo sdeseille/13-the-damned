@@ -21,7 +21,7 @@ let difficulty_level = 'easy'; // Difficulty level (easy,normal,hard)
 bold_font = 'bold 20px Arial, sans-serif';
 normal_font = '20px Arial, sans-serif';
 
-let textOptions = {
+let text_options = {
   color: 'white',
   font: normal_font
 };
@@ -74,27 +74,27 @@ function get_highscores() {
   return JSON.parse(localStorage.getItem('13_the_damned_highscores')) || [];
 }
 
-function save_highscore(newScore, playerName) {
-  const highScores = get_highscores();
-  const newHighScore = { score: newScore, name: playerName };
+function save_highscore(new_score, player_name) {
+  let highscores = get_highscores();
+  const new_highscore = { score: new_score, name: player_name };
 
   // Add new score and sort the array in descending order
-  highScores.push(newHighScore);
-  highScores.sort((a, b) => b.score - a.score);
+  highscores.push(new_highscore);
+  highscores.sort((a, b) => b.score - a.score);
 
   // Limit the array to top MAX_HIGH_SCORES scores
-  highScores.splice(MAX_HIGH_SCORES);
+  highscores.splice(MAX_HIGH_SCORES);
 
   // Save back to localStorage
-  localStorage.setItem('13_the_damned_highscores', JSON.stringify(highScores));
+  localStorage.setItem('13_the_damned_highscores', JSON.stringify(highscores));
 }
 
 // Function to generate table rows
-function generateScoreTable(highScores) {
-  let textObjects = [];
-  let startY = 160; // Starting Y position for the first row
-  let rowHeight = 40; // Space between each row
-  let last_y_pos = startY; // Used by text message proposing to restart a game
+function generate_score_table(highscores) {
+  let text_objects = [];
+  let start_y = 160; // Starting Y position for the first row
+  let row_height = 40; // Space between each row
+  let last_y_pos = start_y; // Used by text message proposing to restart a game
 
   // Column x positions for rank, name, and score
   const rankX = 200;
@@ -102,82 +102,82 @@ function generateScoreTable(highScores) {
   const scoreX = 400;
 
   // Header row
-  textObjects.push(Text({
+  text_objects.push(Text({
     text: 'Rank',
     font: '20px Arial',
     color: 'white',
     x: rankX,
-    y: startY - 40,
+    y: start_y - 40,
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
   }));
-  textObjects.push(Text({
+  text_objects.push(Text({
     text: 'Name',
     font: '20px Arial',
     color: 'white',
     x: nameX,
-    y: startY - 40,
+    y: start_y - 40,
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
   }));
-  textObjects.push(Text({
+  text_objects.push(Text({
     text: 'Score',
     font: '20px Arial',
     color: 'white',
     x: scoreX,
-    y: startY - 40,
+    y: start_y - 40,
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
   }));
 
   // Loop through high scores and create Text objects for each entry
-  highScores.forEach((entry, index) => {
-    let yPos = startY + (index * rowHeight);
-    last_y_pos = yPos;
+  highscores.forEach((entry, index) => {
+    let y_pos = start_y + (index * row_height);
+    last_y_pos = y_pos;
 
-    textObjects.push(Text({
+    text_objects.push(Text({
       text: `${index + 1}`.padStart(3,'0'),  // Rank
       font: '20px Arial',
       color: 'white',
       x: rankX,
-      y: yPos,
+      y: y_pos,
       anchor: {x: 0.5, y: 0.5},
       textAlign: 'center'
     }));
 
-    textObjects.push(Text({
+    text_objects.push(Text({
       text: entry.name,  // Player Name
       font: '20px Arial',
       color: 'white',
       x: nameX,
-      y: yPos,
+      y: y_pos,
       anchor: {x: 0.5, y: 0.5},
       textAlign: 'center'
     }));
 
-    textObjects.push(Text({
+    text_objects.push(Text({
       text: entry.score.toString().padStart(3,'0'),  // Player Score
       font: '20px Arial',
       color: 'white',
       x: scoreX,
-      y: yPos,
+      y: y_pos,
       anchor: {x: 0.5, y: 0.5},
       textAlign: 'center'
     }));
   });
 
   // Add a message to restart a game
-  textObjects.push(Text({
+  text_objects.push(Text({
     text: 'Press [r] to restart',
     font: 'bold 16px Arial',
     color: 'white',
     x: 300,
-    y: last_y_pos + (rowHeight * 1.5),
+    y: last_y_pos + (row_height * 1.5),
     anchor: {x: 0.5, y: 0.5},
     textAlign: 'center'
   }));
 
-  return textObjects;
+  return text_objects;
 }
 
 function new_banner(msg, colorname) {
@@ -244,14 +244,14 @@ function option_button(text, xpos, ypos, colorname,ratio){
   });
 }
 
-let easyButton = option_button('easy', 150, 150, 'white', EASYMULTIPLIER);
-let mediumButton = option_button('medium', 200+easyButton.width, 150, 'white', NORMALMULTIPLIER);
-let hardButton = option_button('hard', 300+mediumButton.width, 150, 'white', HARDMULTIPLIER);
+let easy_button = option_button('easy', 150, 150, 'white', EASYMULTIPLIER);
+let medium_button = option_button('medium', 200+easy_button.width, 150, 'white', NORMALMULTIPLIER);
+let hard_button = option_button('hard', 300+medium_button.width, 150, 'white', HARDMULTIPLIER);
 
 // Track these objects for pointer (mouse/touch) interaction
-track(easyButton);
-track(mediumButton);
-track(hardButton);
+track(easy_button);
+track(medium_button);
+track(hard_button);
 
 let start_again = Text({
   text: 'Press [r] to restart',
@@ -332,7 +332,7 @@ let start = Text({
   onOut: function() {
     this.font = normal_font;
   },
-  ...textOptions
+  ...text_options
 });
 
 let difficulty = Text({
@@ -348,7 +348,7 @@ let difficulty = Text({
   onOut: function() {
     this.font = normal_font;
   },
-  ...textOptions
+  ...text_options
 });
 
 let highscore = Text({
@@ -364,7 +364,7 @@ let highscore = Text({
   onOut: function() {
     this.font = normal_font;
   },
-  ...textOptions
+  ...text_options
 });
 
 let start_menu = Grid({
@@ -406,7 +406,6 @@ let keep_button = Button({
     width: 150,
     height: 40,
     color: 'blue',
-    //onDown: this.onPointerDown.bind(this),
     radius: 5,
     render: function() {
       this.context.fillStyle = this.color;
@@ -483,7 +482,6 @@ let endgame_button = Button({
     width: 150,
     height: 40,
     color: 'orange',
-    //onDown: this.onPointerDown.bind(this),
     radius: 5,
     render: function() {
       this.context.fillStyle = this.color;
@@ -556,7 +554,7 @@ class Card {
       width: width,
       height: height,
       color: this.color,
-      onDown: this.onPointerDown.bind(this),
+      onDown: this.on_pointer_down.bind(this),
       radius: 5,
       render: function() {
         this.context.fillStyle = this.color;
@@ -577,7 +575,7 @@ class Card {
       y: y + height / 2,
       anchor: { x: 0.5, y: 0.5 },
       textAlign: 'center',
-      onDown: this.onPointerDown.bind(this)
+      onDown: this.on_pointer_down.bind(this)
     });
     // Track pointer events on this sprite
     track(this.sprite, this.text);
@@ -644,7 +642,7 @@ class Card {
   }
 
   // Handle the pointer down event
-  onPointerDown() {
+  on_pointer_down() {
     console.log(`Card with text "${this.text.text}" clicked!`);
     // Additional actions on click can be added here
     this.show_card();
@@ -659,7 +657,7 @@ class Card {
   // Check if the card was clicked
   checkForClick() {
     if (this.sprite.collidesWithPointer()) {
-      this.onPointerDown();
+      this.on_pointer_down();
     }
   }
 
@@ -778,7 +776,7 @@ function check_cards_sum(){
 let scoreTable = [];
 let loop = GameLoop({  // create the main game loop
   update: function() { // update the game state
-    let highScores = [];
+    let highscores = [];
     // Generate the high score table
     switch (game_state) {
       case 'menu':
@@ -802,25 +800,25 @@ let loop = GameLoop({  // create the main game loop
       case 'gameover':
         game_over.update();
         // Check if player made a high score
-        highScores = get_highscores();
+        highscores = get_highscores();
         break;
       case 'gamewon':
         game_won.update();
         // Check if player made a high score
-        highScores = get_highscores();
-        if (player_score > highScores[highScores.length - 1]?.score || highScores.length < MAX_HIGH_SCORES) {
+        highscores = get_highscores();
+        if (player_score > highscores[highscores.length - 1]?.score || highscores.length < MAX_HIGH_SCORES) {
           // Player has a high score, ask for their name
-          let playerName = prompt('New High Score! Enter your nickname:');
-          console.log('playerName: ['+playerName+']');
-          let trimmed_playerName = playerName.substring(0, 3);
-          console.log('trimmed_playerName: ['+trimmed_playerName+']');
-          save_highscore(player_score, trimmed_playerName);
+          let player_name = prompt('New High Score! Enter your nickname:');
+          console.log('player_name: ['+player_name+']');
+          let trimmed_player_name = player_name.substring(0, 3);
+          console.log('trimmed_player_name: ['+trimmed_player_name+']');
+          save_highscore(player_score, trimmed_player_name);
         }
-        scoreTable = generateScoreTable(get_highscores());
+        scoreTable = generate_score_table(get_highscores());
         game_state = 'highscores';
         break;
       case 'highscores':
-        scoreTable = generateScoreTable(get_highscores());
+        scoreTable = generate_score_table(get_highscores());
         break;
     }
   },
@@ -832,9 +830,9 @@ let loop = GameLoop({  // create the main game loop
         break;
       case 'difficultychoice':
         difficulty_level_title.render();
-        easyButton.render();
-        mediumButton.render();
-        hardButton.render();
+        easy_button.render();
+        medium_button.render();
+        hard_button.render();
         start_again.render();
         break;
       case 'play':
