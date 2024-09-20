@@ -645,13 +645,16 @@ class Card {
   on_pointer_down() {
     console.log(`Card with text "${this.text.text}" clicked!`);
     // Additional actions on click can be added here
-    this.show_card();
-    number_of_returned_cards += 1;
-    this.add_card_value();
-    current_picked_cards.push(this);
-    game_points_multiplier += 1;
-    console.log(game_cards)
-    console.log('Current multiplier: ' + game_points_multiplier);
+    if (! this.is_pick()) {
+      this.show_card();
+      number_of_returned_cards += 1;
+      this.add_card_value();
+      this.pick_card();
+      current_picked_cards.push(this);
+      game_points_multiplier += 1;
+      console.log(game_cards)
+      console.log('Current multiplier: ' + game_points_multiplier);
+    }
   }
 
   // Check if the card was clicked
